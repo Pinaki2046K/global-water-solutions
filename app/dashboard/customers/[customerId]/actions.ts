@@ -1,0 +1,181 @@
+"use server";
+
+import { prisma } from "@/lib/db";
+import { $Enums } from "@/app/generated/prisma/client";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+export async function getCustomerDetails(customerId: string) {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    include: {
+      services: {
+        include: {
+          amcContracts: true,
+          complaints: {
+            where: { status: { not: "RESOLVED" } }, // Open complaints count/preview
+          },
+        },
+        orderBy: { installationDate: "desc" },
+      },
+      payments: {
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      },
+      complaints: {
+        orderBy: { createdAt: "desc" },
+        include: {
+          technician: {
+            select: { name: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!customer) {
+    return null;
+  }
+
+  return customer;
+}
+
+const serviceSchema = z.object({
+  serviceType: z.string().min(2),
+  installationDate: z.string().transform((str) => new Date(str)),
+});
+
+export async function addService(customerId: string, formData: FormData) {
+  const rawData = {
+    serviceType: formData.get("serviceType"),
+    installationDate: formData.get("installationDate"),
+  };
+
+  const validated = serviceSchema.safeParse(rawData);
+  if (!validated.success) {
+    return { error: "Invalid data" };
+  }
+
+  await prisma.service.create({
+    data: {
+      customerId,
+      serviceType: validated.data.serviceType,
+      installationDate: validated.data.installationDate,
+    },
+  });
+
+  revalidatePath(`/dashboard/customers/${customerId}`);
+  return { success: true };
+}
+
+const amcSchema = z.object({
+  serviceId: z.string(),
+  startDate: z.string().transform((str) => new Date(str)),
+  amount: z.coerce.number().min(1),
+});
+
+export async function createAMC(customerId: string, formData: FormData) {
+  const rawData = {
+    serviceId: formData.get("serviceId"),
+    startDate: formData.get("startDate"),
+    amount: formData.get("amount"),
+  };
+
+  const validated = amcSchema.safeParse(rawData);
+
+  if (!validated.success) {
+    return { error: "Invalid AMC Data" };
+  }
+
+  const { startDate, amount, serviceId } = validated.data;
+
+  // Calculate End Date (1 Year)
+  const endDate = new Date(startDate);
+  endDate.setFullYear(endDate.getFullYear() + 1);
+
+  // Renewal Date (e.g., 30 days before end)
+  const renewalDate = new Date(endDate);
+  renewalDate.setDate(renewalDate.getDate() - 30);
+
+  await prisma.aMCContract.create({
+    data: {
+      customerId,
+      serviceId,
+      startDate,
+      endDate,
+      renewalDate,
+      amount,
+      status: $Enums.AMCStatus.ACTIVE,
+    },
+  });
+
+  revalidatePath(`/dashboard/customers/${customerId}`);
+  return { success: true };
+}
+
+const complaintSchema = z.object({
+  serviceId: z.string().min(1),
+  description: z.string().min(3),
+});
+
+export async function logComplaint(customerId: string, formData: FormData) {
+  const rawData = {
+    serviceId: formData.get("serviceId"),
+    description: formData.get("description"),
+  };
+
+  const validated = complaintSchema.safeParse(rawData);
+  if (!validated.success) {
+    return { error: "Invalid complaint data" };
+  }
+
+  await prisma.complaint.create({
+    data: {
+      customerId,
+      serviceId: validated.data.serviceId,
+      description: validated.data.description,
+      status: $Enums.ComplaintStatus.OPEN,
+    },
+  });
+
+  revalidatePath(`/dashboard/customers/${customerId}`);
+  return { success: true };
+}
+
+const paymentSchema = z.object({
+  amount: z.coerce.number().positive(),
+  paymentMode: z.string().min(1),
+  amcId: z.string().optional(),
+});
+
+export async function recordPayment(customerId: string, formData: FormData) {
+  const rawData = {
+    amount: formData.get("amount"),
+    paymentMode: formData.get("paymentMode"),
+    amcId: formData.get("amcId"),
+  };
+
+  const validated = paymentSchema.safeParse(rawData);
+  if (!validated.success) {
+    return { error: "Invalid payment data" };
+  }
+
+  const amcId =
+    validated.data.amcId && validated.data.amcId.length > 0
+      ? validated.data.amcId
+      : null;
+
+  await prisma.payment.create({
+    data: {
+      customerId,
+      amount: validated.data.amount,
+      paymentMode: validated.data.paymentMode,
+      amcId: amcId,
+      status: $Enums.PaymentStatus.PAID,
+      paymentDate: new Date(),
+    },
+  });
+
+  revalidatePath(`/dashboard/customers/${customerId}`);
+  return { success: true };
+}

@@ -1,0 +1,611 @@
+"use client";
+
+import Link from "next/link";
+import {
+  ArrowLeft,
+  User,
+  Phone,
+  MapPin,
+  Mail,
+  Wrench,
+  FileText,
+  Plus,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  CreditCard,
+} from "lucide-react";
+import { useState } from "react";
+import {
+  AddServiceForm,
+  AddAMCForm,
+  AddComplaintForm,
+  AddPaymentForm,
+} from "./forms";
+import { cn } from "@/lib/utils";
+
+// Types matching the Prisma output
+type CustomerDetail = {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  email: string | null;
+  createdAt: Date;
+  services: {
+    id: string;
+    serviceType: string;
+    installationDate: Date | string;
+    amcContracts: {
+      id: string;
+      startDate: Date | string;
+      endDate: Date | string;
+      amount: number;
+      status: string;
+    }[];
+  }[];
+  payments: {
+    id: string;
+    amount: number;
+    createdAt: Date | string;
+    paymentMode: string;
+    status: string;
+    amcId?: string;
+  }[];
+  complaints: {
+    id: string;
+    description: string;
+    status: string;
+    createdAt: Date | string;
+    technician?: {
+      name: string;
+    } | null;
+  }[];
+};
+
+export default function ClientPage({ customer }: { customer: CustomerDetail }) {
+  const [activeTab, setActiveTab] = useState<
+    "services" | "payments" | "complaints"
+  >("services");
+  const [showAddService, setShowAddService] = useState(false);
+  const [showAddAMC, setShowAddAMC] = useState(false);
+  const [showAddComplaint, setShowAddComplaint] = useState(false);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+
+  const closeAllForms = () => {
+    setShowAddService(false);
+    setShowAddAMC(false);
+    setShowAddComplaint(false);
+    setShowAddPayment(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center space-x-4">
+          <Link
+            href="/dashboard/customers"
+            className="group flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-gray-200 shadow-sm transition-all hover:border-gray-300 hover:shadow-md"
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-500 transition-colors group-hover:text-gray-900" />
+          </Link>
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+              {customer.name}
+            </h2>
+            <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+              <span className="flex items-center">
+                <User className="mr-1 h-3.5 w-3.5" /> Customer ID:{" "}
+                {customer.id.substring(0, 8)}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-[0.98]">
+            Edit Profile
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Left Column: Customer Profile */}
+        <div className="space-y-6">
+          <div className="group rounded-xl border border-gray-200/60 bg-white p-6 shadow-sm transition-all hover:shadow-md">
+            <div className="mb-6 flex items-center justify-between">
+              <h3 className="text-base font-semibold text-gray-900 flex items-center">
+                <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                  <User className="h-4 w-4" />
+                </div>
+                Contact Details
+              </h3>
+            </div>
+            <div className="space-y-5 text-sm">
+              <div className="flex items-start group/item">
+                <div className="mt-0.5 mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50 text-gray-400 group-hover/item:bg-indigo-50 group-hover/item:text-indigo-500 transition-colors">
+                  <Phone className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">Phone</p>
+                  <p className="text-gray-500 font-mono mt-0.5">
+                    {customer.phone}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start group/item">
+                <div className="mt-0.5 mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50 text-gray-400 group-hover/item:bg-indigo-50 group-hover/item:text-indigo-500 transition-colors">
+                  <Mail className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">Email</p>
+                  <p className="text-gray-500 mt-0.5 break-all">
+                    {customer.email || "N/A"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start group/item">
+                <div className="mt-0.5 mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50 text-gray-400 group-hover/item:bg-indigo-50 group-hover/item:text-indigo-500 transition-colors">
+                  <MapPin className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">Address</p>
+                  <p className="text-gray-500 mt-0.5">{customer.address}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-gray-200/60 bg-white p-6 shadow-sm">
+            <div className="mb-4">
+              <h3 className="text-base font-semibold text-gray-900">
+                Quick Actions
+              </h3>
+            </div>
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  closeAllForms();
+                  setShowAddService(true);
+                }}
+                className="group w-full flex items-center justify-between px-4 py-3 rounded-xl border border-transparent bg-gray-50 text-sm font-medium text-gray-700 hover:bg-white hover:border-indigo-100 hover:shadow-sm hover:text-indigo-700 transition-all"
+              >
+                <span className="flex items-center">
+                  <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white text-indigo-600 shadow-sm border border-gray-100 group-hover:border-indigo-100 group-hover:bg-indigo-50">
+                    <Plus className="h-4 w-4" />
+                  </div>
+                  Add Service
+                </span>
+              </button>
+              <button
+                onClick={() => {
+                  closeAllForms();
+                  setShowAddAMC(true);
+                }}
+                className="group w-full flex items-center justify-between px-4 py-3 rounded-xl border border-transparent bg-gray-50 text-sm font-medium text-gray-700 hover:bg-white hover:border-green-100 hover:shadow-sm hover:text-green-700 transition-all"
+              >
+                <span className="flex items-center">
+                  <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white text-green-600 shadow-sm border border-gray-100 group-hover:border-green-100 group-hover:bg-green-50">
+                    <FileText className="h-4 w-4" />
+                  </div>
+                  Create AMC
+                </span>
+              </button>
+              <button
+                onClick={() => {
+                  closeAllForms();
+                  setShowAddComplaint(true);
+                }}
+                className="group w-full flex items-center justify-between px-4 py-3 rounded-xl border border-transparent bg-gray-50 text-sm font-medium text-gray-700 hover:bg-white hover:border-red-100 hover:shadow-sm hover:text-red-700 transition-all"
+              >
+                <span className="flex items-center">
+                  <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white text-red-600 shadow-sm border border-gray-100 group-hover:border-red-100 group-hover:bg-red-50">
+                    <AlertCircle className="h-4 w-4" />
+                  </div>
+                  Log Complaint
+                </span>
+              </button>
+              <button
+                onClick={() => {
+                  closeAllForms();
+                  setShowAddPayment(true);
+                }}
+                className="group w-full flex items-center justify-between px-4 py-3 rounded-xl border border-transparent bg-gray-50 text-sm font-medium text-gray-700 hover:bg-white hover:border-gray-200 hover:shadow-sm hover:text-gray-900 transition-all"
+              >
+                <span className="flex items-center">
+                  <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white text-gray-600 shadow-sm border border-gray-100 group-hover:border-gray-200 group-hover:bg-gray-100">
+                    <CreditCard className="h-4 w-4" />
+                  </div>
+                  Record Payment
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Dynamic Tabs */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Inline Forms Area */}
+          {showAddService && (
+            <AddServiceForm customerId={customer.id} onClose={closeAllForms} />
+          )}
+
+          {showAddAMC && (
+            <AddAMCForm
+              customerId={customer.id}
+              services={customer.services || []}
+              onClose={closeAllForms}
+            />
+          )}
+
+          {showAddComplaint && (
+            <AddComplaintForm
+              customerId={customer.id}
+              services={customer.services || []}
+              onClose={closeAllForms}
+            />
+          )}
+
+          {showAddPayment && (
+            <AddPaymentForm
+              customerId={customer.id}
+              services={customer.services || []}
+              onClose={closeAllForms}
+            />
+          )}
+
+          <div className="rounded-xl border border-gray-200/60 bg-white shadow-sm overflow-hidden min-h-[500px] flex flex-col">
+            <div className="border-b border-gray-100 bg-gray-50/50 px-6 pt-4">
+              <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                <button
+                  onClick={() => setActiveTab("services")}
+                  className={cn(
+                    activeTab === "services"
+                      ? "border-indigo-500 text-indigo-600 bg-white shadow-sm border-b-0 rounded-t-lg ring-1 ring-inset ring-black/5"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 rounded-t-lg transition-all",
+                    "whitespace-nowrap py-3 px-4 text-sm font-medium border-b-2 transition-all relative top-[1px]",
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Wrench
+                      className={cn(
+                        "h-4 w-4",
+                        activeTab === "services"
+                          ? "text-indigo-500"
+                          : "text-gray-400",
+                      )}
+                    />
+                    Services & AMCs
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveTab("payments")}
+                  className={cn(
+                    activeTab === "payments"
+                      ? "border-indigo-500 text-indigo-600 bg-white shadow-sm border-b-0 rounded-t-lg ring-1 ring-inset ring-black/5"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 rounded-t-lg transition-all",
+                    "whitespace-nowrap py-3 px-4 text-sm font-medium border-b-2 transition-all relative top-[1px]",
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <CreditCard
+                      className={cn(
+                        "h-4 w-4",
+                        activeTab === "payments"
+                          ? "text-indigo-500"
+                          : "text-gray-400",
+                      )}
+                    />
+                    Payments
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveTab("complaints")}
+                  className={cn(
+                    activeTab === "complaints"
+                      ? "border-indigo-500 text-indigo-600 bg-white shadow-sm border-b-0 rounded-t-lg ring-1 ring-inset ring-black/5"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 rounded-t-lg transition-all",
+                    "whitespace-nowrap py-3 px-4 text-sm font-medium border-b-2 transition-all relative top-[1px]",
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <AlertCircle
+                      className={cn(
+                        "h-4 w-4",
+                        activeTab === "complaints"
+                          ? "text-indigo-500"
+                          : "text-gray-400",
+                      )}
+                    />
+                    Complaints
+                  </div>
+                </button>
+              </nav>
+            </div>
+
+            <div className="p-6 flex-1">
+              {/* SERVICES TAB */}
+              {activeTab === "services" && (
+                <div className="space-y-6">
+                  {customer.services.length === 0 ? (
+                    <div className="text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                      <Wrench className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                      <h3 className="text-base font-medium text-gray-900">
+                        No services found
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1 max-w-sm mx-auto">
+                        Get started by adding a new service installation for
+                        this customer.
+                      </p>
+                      <button
+                        onClick={() => {
+                          closeAllForms();
+                          setShowAddService(true);
+                        }}
+                        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      >
+                        <Plus className="mr-2 -ml-1 h-4 w-4" />
+                        Add Service
+                      </button>
+                    </div>
+                  ) : (
+                    customer.services.map((service: any) => (
+                      <div
+                        key={service.id}
+                        className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden transition-all hover:shadow-md"
+                      >
+                        <div className="border-b border-gray-100 bg-gray-50/50 px-4 py-3 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-white border border-gray-200 rounded-lg shadow-sm">
+                              <Wrench className="h-4 w-4 text-indigo-600" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-gray-900 text-sm">
+                                {service.serviceType}
+                              </h4>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-gray-500 bg-white px-2 py-1 rounded-md border border-gray-200 shadow-sm">
+                            <Clock className="h-3.5 w-3.5" />
+                            Installed:{" "}
+                            {new Date(
+                              service.installationDate,
+                            ).toLocaleDateString()}
+                          </div>
+                        </div>
+
+                        <div className="p-5">
+                          <h5 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center">
+                            <FileText className="h-3.5 w-3.5 mr-1" />
+                            Active Contracts
+                          </h5>
+                          {service.amcContracts.length === 0 ? (
+                            <div className="text-sm text-gray-500 bg-gray-50 rounded-lg p-4 text-center border border-gray-100">
+                              No active AMC contracts.
+                              <button
+                                className="ml-2 text-indigo-600 font-medium hover:underline"
+                                onClick={() => {
+                                  closeAllForms();
+                                  setShowAddAMC(true);
+                                }}
+                              >
+                                Create One
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              {service.amcContracts.map((amc: any) => (
+                                <div
+                                  key={amc.id}
+                                  className="group flex items-center justify-between bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm transition-all hover:border-indigo-200 hover:shadow-sm"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-8 w-8 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                                      <CheckCircle className="h-4 w-4" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="font-medium text-gray-900">
+                                        AMC Contract
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        {new Date(
+                                          amc.startDate,
+                                        ).toLocaleDateString()}{" "}
+                                        -{" "}
+                                        {new Date(
+                                          amc.endDate,
+                                        ).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-4">
+                                    <span className="font-mono font-medium text-gray-700">
+                                      ${amc.amount}
+                                    </span>
+                                    <span
+                                      className={cn(
+                                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
+                                        amc.status === "ACTIVE"
+                                          ? "bg-green-50 text-green-700 ring-green-600/20"
+                                          : amc.status === "PENDING_PAYMENT"
+                                            ? "bg-yellow-50 text-yellow-800 ring-yellow-600/20"
+                                            : "bg-gray-50 text-gray-600 ring-gray-500/10",
+                                      )}
+                                    >
+                                      {amc.status.replace("_", " ")}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* PAYMENTS TAB */}
+              {activeTab === "payments" && (
+                <div className="space-y-4">
+                  {customer.payments.length === 0 ? (
+                    <div className="text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                      <CreditCard className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                      <h3 className="text-base font-medium text-gray-900">
+                        No payments found
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Record a payment to see it listed here.
+                      </p>
+                      <button
+                        onClick={() => {
+                          closeAllForms();
+                          setShowAddPayment(true);
+                        }}
+                        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      >
+                        <CreditCard className="mr-2 -ml-1 h-4 w-4" />
+                        Record Payment
+                      </button>
+                    </div>
+                  ) : (
+                    customer.payments.map((payment: any) => (
+                      <div
+                        key={payment.id}
+                        className="group flex items-center justify-between p-4 border border-gray-200 rounded-xl bg-white hover:border-indigo-200 hover:shadow-sm transition-all"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100 group-hover:bg-green-100 transition-colors">
+                            <span className="font-sans font-bold text-lg">
+                              $
+                            </span>
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900 text-lg">
+                              ${payment.amount}
+                            </div>
+                            <div className="text-xs text-gray-500 flex items-center mt-0.5">
+                              <Clock className="h-3 w-3 mr-1" />
+                              {new Date(
+                                payment.createdAt,
+                              ).toLocaleDateString()}{" "}
+                              <span className="mx-1.5 text-gray-300">|</span>
+                              Method:{" "}
+                              <span className="font-medium text-gray-700 ml-1 capitalize">
+                                {payment.paymentMode.toLowerCase()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right flex flex-col items-end gap-1">
+                          <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                            {payment.status}
+                          </span>
+                          {payment.amcId && (
+                            <div className="text-xs text-indigo-500 flex items-center font-medium bg-indigo-50 px-2 py-0.5 rounded-md">
+                              AMC Linked
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* COMPLAINTS TAB */}
+              {activeTab === "complaints" && (
+                <div className="space-y-4">
+                  {customer.complaints.length === 0 ? (
+                    <div className="text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                      <AlertCircle className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                      <h3 className="text-base font-medium text-gray-900">
+                        No complaints logged
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Everything seems to be running smoothly!
+                      </p>
+                      <button
+                        onClick={() => {
+                          closeAllForms();
+                          setShowAddComplaint(true);
+                        }}
+                        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      >
+                        <AlertCircle className="mr-2 -ml-1 h-4 w-4" />
+                        Log Complaint
+                      </button>
+                    </div>
+                  ) : (
+                    customer.complaints.map((complaint: any) => (
+                      <div
+                        key={complaint.id}
+                        className="p-5 border border-gray-200 rounded-xl bg-white hover:shadow-sm transition-all group"
+                      >
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-start gap-3">
+                            <div
+                              className={cn(
+                                "mt-1 p-2 rounded-lg",
+                                complaint.status === "OPEN"
+                                  ? "bg-red-50 text-red-600"
+                                  : complaint.status === "RESOLVED"
+                                    ? "bg-green-50 text-green-600"
+                                    : "bg-yellow-50 text-yellow-600",
+                              )}
+                            >
+                              <Wrench className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-900 line-clamp-1 text-base">
+                                {complaint.description}
+                              </div>
+                              <div className="text-xs text-gray-500 flex items-center mt-1">
+                                <Clock className="h-3 w-3 mr-1" />
+                                Logged on{" "}
+                                {new Date(
+                                  complaint.createdAt,
+                                ).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </div>
+                          <span
+                            className={cn(
+                              "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
+                              complaint.status === "OPEN"
+                                ? "bg-red-50 text-red-700 ring-red-600/10"
+                                : complaint.status === "RESOLVED"
+                                  ? "bg-green-50 text-green-700 ring-green-600/20"
+                                  : "bg-yellow-50 text-yellow-800 ring-yellow-600/20",
+                            )}
+                          >
+                            {complaint.status}
+                          </span>
+                        </div>
+                        {complaint.technician?.name && (
+                          <div className="mt-4 bg-gray-50 rounded-lg p-3 flex items-center gap-3 border border-gray-100">
+                            <div className="h-8 w-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500">
+                              <User className="h-4 w-4" />
+                            </div>
+                            <div className="text-sm">
+                              <p className="text-xs text-gray-500">
+                                Assigned Technician
+                              </p>
+                              <p className="font-medium text-gray-900">
+                                {complaint.technician.name}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
