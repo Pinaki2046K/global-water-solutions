@@ -4,9 +4,7 @@ import {
   AlertTriangle,
   MessageSquare,
   ArrowUpRight,
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
+  IndianRupee,
 } from "lucide-react";
 import {
   getDashboardStats,
@@ -60,9 +58,6 @@ export default async function DashboardPage() {
                 <span className="text-3xl font-bold text-gray-900">
                   {stats.totalCustomers}
                 </span>
-                <span className="text-xs font-medium text-green-600 flex items-center bg-green-50 px-1.5 py-0.5 rounded-full">
-                  <TrendingUp className="h-3 w-3 mr-1" /> +2.5%
-                </span>
               </div>
             </div>
             <div className="rounded-full bg-indigo-50 p-3">
@@ -83,9 +78,6 @@ export default async function DashboardPage() {
                 <span className="text-3xl font-bold text-gray-900">
                   {stats.activeAMCs}
                 </span>
-                <span className="text-xs font-medium text-green-600 flex items-center bg-green-50 px-1.5 py-0.5 rounded-full">
-                  <TrendingUp className="h-3 w-3 mr-1" /> +5%
-                </span>
               </div>
             </div>
             <div className="rounded-full bg-green-50 p-3">
@@ -104,7 +96,7 @@ export default async function DashboardPage() {
               <p className="text-sm font-medium text-gray-500">Pending Dues</p>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-3xl font-bold text-gray-900">
-                  ${stats.pendingAmount}
+                  ₹{stats.pendingAmount}
                 </span>
               </div>
               <p className="text-xs text-red-500 mt-1 font-medium">
@@ -112,7 +104,7 @@ export default async function DashboardPage() {
               </p>
             </div>
             <div className="rounded-full bg-red-50 p-3">
-              <DollarSign className="h-6 w-6 text-red-600" />
+              <IndianRupee className="h-6 w-6 text-red-600" />
             </div>
           </div>
           <div className="mt-4 h-1 w-full bg-gray-50 rounded-full overflow-hidden">

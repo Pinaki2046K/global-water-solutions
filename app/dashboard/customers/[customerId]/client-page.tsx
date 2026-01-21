@@ -419,7 +419,7 @@ export default function ClientPage({ customer }: { customer: CustomerDetail }) {
                                   </div>
                                   <div className="flex items-center gap-4">
                                     <span className="font-mono font-medium text-gray-700">
-                                      ${amc.amount}
+                                      ₹{amc.amount}
                                     </span>
                                     <span
                                       className={cn(
@@ -477,12 +477,12 @@ export default function ClientPage({ customer }: { customer: CustomerDetail }) {
                         <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100 group-hover:bg-green-100 transition-colors">
                             <span className="font-sans font-bold text-lg">
-                              $
+                              ₹
                             </span>
                           </div>
                           <div>
                             <div className="font-semibold text-gray-900 text-lg">
-                              ${payment.amount}
+                              ₹{payment.amount}
                             </div>
                             <div className="text-xs text-gray-500 flex items-center mt-0.5">
                               <Clock className="h-3 w-3 mr-1" />

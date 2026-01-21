@@ -177,7 +177,7 @@ export function AddAMCForm({
             </label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <span className="text-gray-500 sm:text-sm">$</span>
+                <span className="text-gray-500 sm:text-sm">₹</span>
               </div>
               <input
                 type="number"
@@ -304,7 +304,7 @@ export function AddPaymentForm({
             </label>
             <div className="relative">
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500 sm:text-sm">
-                $
+                ₹
               </span>
               <input
                 type="number"
@@ -336,7 +336,7 @@ export function AddPaymentForm({
             <option value="">-- None --</option>
             {amcs.map((amc: any) => (
               <option key={amc.id} value={amc.id}>
-                AMC {new Date(amc.startDate).toLocaleDateString()} ($
+                AMC {new Date(amc.startDate).toLocaleDateString()} (₹
                 {amc.amount}) - {amc.status}
               </option>
             ))}
