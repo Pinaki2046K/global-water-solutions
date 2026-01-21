@@ -4,7 +4,7 @@ import { useState } from "react";
 import { authClient } from "../../../lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, Loader2, ArrowRight } from "lucide-react";
+import { Mail, Lock, Loader2, ArrowRight, Droplet } from "lucide-react";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -45,19 +45,8 @@ export default function SignIn() {
         <div className="relative overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-900/5">
           <div className="p-8 md:p-10">
             <div className="mb-10 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-200">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-6 w-6"
-                >
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-200">
+                <Droplet className="h-8 w-8" />
               </div>
               <h2 className="text-2xl font-bold tracking-tight text-gray-900">
                 Welcome back

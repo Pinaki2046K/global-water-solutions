@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { $Enums } from "@/app/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
