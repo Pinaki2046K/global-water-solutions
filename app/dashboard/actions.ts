@@ -175,3 +175,80 @@ export async function getRecentActivity() {
     date: payment.createdAt,
   }));
 }
+
+export type SearchResult = {
+  id: string;
+  type: "Customer" | "AMC" | "Complaint";
+  title: string;
+  subtitle: string;
+  url: string;
+};
+
+export async function globalSearch(query: string): Promise<SearchResult[]> {
+  if (!query || query.length < 2) return [];
+
+  const [customers, amcs, complaints] = await Promise.all([
+    prisma.customer.findMany({
+      where: {
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { email: { contains: query, mode: "insensitive" } },
+        ],
+      },
+      take: 3,
+    }),
+    prisma.aMCContract.findMany({
+      where: {
+        OR: [
+          { customer: { name: { contains: query, mode: "insensitive" } } },
+          {
+            service: {
+              serviceType: { contains: query, mode: "insensitive" },
+            },
+          },
+        ],
+      },
+      include: {
+        customer: true,
+        service: true,
+      },
+      take: 3,
+    }),
+    prisma.complaint.findMany({
+      where: {
+        OR: [{ description: { contains: query, mode: "insensitive" } }],
+      },
+      include: {
+        customer: true,
+      },
+      take: 3,
+    }),
+  ]);
+
+  const results: SearchResult[] = [
+    ...customers.map((c) => ({
+      id: c.id,
+      type: "Customer" as const,
+      title: c.name,
+      subtitle: c.email || "No email",
+      url: `/dashboard/customers/${c.id}`,
+    })),
+    ...amcs.map((a) => ({
+      id: a.id,
+      type: "AMC" as const,
+      title: a.customer.name,
+      subtitle: a.service.serviceType,
+      url: `/dashboard/amcs/${a.id}`, // Adjust if you have a specific AMC detail page
+    })),
+    ...complaints.map((c) => ({
+      id: c.id,
+      type: "Complaint" as const,
+      title:
+        c.description.slice(0, 40) + (c.description.length > 40 ? "..." : ""),
+      subtitle: c.customer.name,
+      url: `/dashboard/complaints/${c.id}`, // Adjust if you have a specific Complaint detail page
+    })),
+  ];
+
+  return results;
+}

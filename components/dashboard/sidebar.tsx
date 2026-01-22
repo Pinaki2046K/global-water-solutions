@@ -12,8 +12,7 @@ import {
   MessageSquare,
   BarChart3, // Using for Analytics as per previous code, looks like a pie chart in image?
   LogOut,
-  Settings,
-  PieChart, // Switching to PieChart if available, or just keeping BarChart3
+  Settings, // Switching to PieChart if available, or just keeping BarChart3
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -50,23 +49,13 @@ export function Sidebar() {
             <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600" />
             <div className="relative h-2.5 w-2.5 rounded-full bg-white ring-4 ring-white/20" />
           </div>
-          <span>WaterSol ERP</span>
+          <span>GWS ERP</span>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto py-4 px-4">
         <nav className="space-y-1">
           {navigation.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (pathname?.startsWith(`${item.href}/`) &&
-                item.href !== "/dashboard");
-            // Adjusted isActive logic so /dashboard doesn't match everything
-            // But /dashboard is root of dashboard.
-            // If pathname is /dashboard, then Dashboard is active.
-            // If pathname is /dashboard/customers, then Customers is active.
-            // Logic: strict match for root, prefix match for others?
-
             const isOverview = item.href === "/dashboard";
             const isCurrent = isOverview
               ? pathname === "/dashboard"
