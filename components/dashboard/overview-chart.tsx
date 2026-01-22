@@ -17,6 +17,31 @@ interface OverviewChartProps {
   }[];
 }
 
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-gray-100 p-3 rounded-xl shadow-[0_10px_15px_-3px_rgb(0,0,0,0.1)]">
+        <p className="text-gray-500 text-sm mb-1 font-medium">{label}</p>
+        <div className="flex items-end gap-2">
+          <span className="text-indigo-600 text-lg font-bold">
+            {`₹${payload[0].value.toLocaleString()}`}
+          </span>
+          <span className="text-gray-400 text-xs font-medium mb-1">
+            Revenue
+          </span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export function OverviewChart({ data }: OverviewChartProps) {
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md h-full">
@@ -75,29 +100,10 @@ export function OverviewChart({ data }: OverviewChartProps) {
               }
             />
             <Tooltip
-              contentStyle={{
-                borderRadius: "8px",
-                border: "none",
-                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                padding: "12px",
-              }}
-              formatter={(
-                value: number | string | Array<number | string>,
-                name: string,
-              ) => [
-                <span key={name} className="text-indigo-600 font-medium">
-                  {`₹${value}`}
-                </span>,
-                <span
-                  key={`${name}-label`}
-                  className="text-gray-500 capitalize ml-2"
-                >
-                  {name}
-                </span>,
-              ]}
+              content={<CustomTooltip />}
               cursor={{
-                stroke: "#4f46e5",
-                strokeWidth: 1,
+                stroke: "#6366f1",
+                strokeWidth: 2,
                 strokeDasharray: "4 4",
               }}
             />
