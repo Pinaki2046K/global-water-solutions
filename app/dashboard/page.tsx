@@ -1,11 +1,8 @@
 import {
   Users,
   FileText,
-  AlertTriangle,
   MessageSquare,
   IndianRupee,
-  TrendingDown,
-  TrendingUp,
 } from "lucide-react";
 import {
   getDashboardStats,
@@ -32,7 +29,7 @@ export default async function DashboardPage() {
             Dashboard Overview
           </h2>
           <p className="text-sm text-gray-500 mt-1 font-medium">
-            Welcome back! Here's your business at a glance.
+            Welcome back! Here&apos;s your business at a glance.
           </p>
         </div>
         <div className="flex items-center space-x-3">

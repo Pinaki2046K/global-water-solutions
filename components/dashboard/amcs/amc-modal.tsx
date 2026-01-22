@@ -4,8 +4,18 @@ import { X } from "lucide-react";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
+interface AMC {
+  payments?: { status: string; amount: number }[];
+  amount: number;
+  status: string;
+  customer: { name: string; phone?: string };
+  service: { serviceType: string };
+  startDate: string | Date;
+  endDate: string | Date;
+}
+
 interface AMCModalProps {
-  amc: any;
+  amc: AMC;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -30,8 +40,8 @@ export function AMCModal({ amc, isOpen, onClose }: AMCModalProps) {
   // Calculate pending amount correctly
   const paidAmount = amc.payments
     ? amc.payments
-        .filter((p: any) => p.status === "PAID")
-        .reduce((sum: number, p: any) => sum + p.amount, 0)
+        .filter((p) => p.status === "PAID")
+        .reduce((sum, p) => sum + p.amount, 0)
     : 0;
   const pendingAmount = amc.amount - paidAmount;
 

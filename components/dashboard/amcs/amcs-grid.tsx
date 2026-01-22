@@ -5,13 +5,34 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { AMCModal } from "./amc-modal";
 
+interface AMCPayment {
+  status: string;
+  amount: number;
+}
+
+interface AMC {
+  id: string;
+  startDate: string | Date;
+  endDate: string | Date;
+  status: string;
+  amount: number;
+  payments: AMCPayment[];
+  customer: {
+    name: string;
+  };
+  service: {
+    serviceType: string;
+  };
+  [key: string]: unknown; // Allow other properties
+}
+
 interface AMCsGridProps {
-  amcs: any[];
+  amcs: AMC[];
   referenceDate?: Date;
 }
 
 export function AMCsGrid({ amcs, referenceDate }: AMCsGridProps) {
-  const [selectedAMC, setSelectedAMC] = useState<any>(null);
+  const [selectedAMC, setSelectedAMC] = useState<AMC | null>(null);
 
   const now = referenceDate || new Date();
 
@@ -30,8 +51,8 @@ export function AMCsGrid({ amcs, referenceDate }: AMCsGridProps) {
 
           // Payment Calculations
           const paidAmount = amc.payments
-            .filter((p: any) => p.status === "PAID")
-            .reduce((sum: number, p: any) => sum + p.amount, 0);
+            .filter((p) => p.status === "PAID")
+            .reduce((sum, p) => sum + p.amount, 0);
           const pendingAmount = amc.amount - paidAmount;
 
           const displayStatus = isExpired
@@ -152,11 +173,13 @@ export function AMCsGrid({ amcs, referenceDate }: AMCsGridProps) {
         })}
       </div>
 
-      <AMCModal
-        amc={selectedAMC}
-        isOpen={!!selectedAMC}
-        onClose={() => setSelectedAMC(null)}
-      />
+      {selectedAMC && (
+        <AMCModal
+          amc={selectedAMC}
+          isOpen={!!selectedAMC}
+          onClose={() => setSelectedAMC(null)}
+        />
+      )}
     </>
   );
 }
