@@ -1,10 +1,62 @@
 import { prisma } from "@/lib/db";
+import { Prisma } from "@/generated/prisma/client";
 import { Plus, AlertCircle, Clock, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { SearchInput } from "@/components/ui/search-input";
+import { FilterDialog, FilterCategory } from "@/components/ui/filter-dialog";
+import { ComplaintStatus } from "@/generated/prisma/client";
 
-export default async function ComplaintsPage() {
+export default async function ComplaintsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{
+    query?: string;
+    status?: string;
+    startDateStart?: string;
+    startDateEnd?: string;
+  }>;
+}) {
+  const query = (await searchParams)?.query || "";
+  const statusParam = (await searchParams)?.status || "";
+
+  const startDateStartString = (await searchParams)?.startDateStart;
+  const startDateStart = startDateStartString ? new Date(startDateStartString) : undefined;
+  const startDateEndString = (await searchParams)?.startDateEnd;
+  const startDateEnd = startDateEndString ? new Date(startDateEndString) : undefined;
+
+  const whereClause: Prisma.ComplaintWhereInput = {
+    AND: [
+      query
+        ? {
+            OR: [
+              {
+                customer: { name: { contains: query, mode: "insensitive" } },
+              },
+              { description: { contains: query, mode: "insensitive" } },
+            ],
+          }
+        : {},
+    ],
+  };
+
+  if (statusParam) {
+    (whereClause.AND as Prisma.ComplaintWhereInput[]).push({
+      status: statusParam as ComplaintStatus,
+    });
+  }
+
+  if (startDateStart || startDateEnd) {
+    (whereClause.AND as Prisma.ComplaintWhereInput[]).push({
+      createdAt: {
+        gte: startDateStart,
+        lte: startDateEnd,
+      },
+    });
+  }
+
   const complaints = await prisma.complaint.findMany({
+    where: whereClause,
     include: {
       customer: true,
       service: true,
@@ -21,6 +73,25 @@ export default async function ComplaintsPage() {
   const resolvedCount = complaints.filter(
     (c) => c.status === "RESOLVED",
   ).length;
+
+  const complaintFilters: FilterCategory[] = [
+    {
+      id: "status",
+      label: "Status",
+      type: "radio",
+      options: [
+        { label: "All", value: "" },
+        { label: "Open", value: "OPEN" },
+        { label: "In Progress", value: "IN_PROGRESS" },
+        { label: "Resolved", value: "RESOLVED" },
+      ],
+    },
+    {
+      id: "startDate",
+      label: "Created Date",
+      type: "date-range",
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -40,6 +111,13 @@ export default async function ComplaintsPage() {
           <Plus className="mr-2 h-4 w-4" />
           New Ticket
         </Link>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+        <div className="w-full sm:max-w-xs">
+          <SearchInput placeholder="Search complaints..." />
+        </div>
+        <FilterDialog filters={complaintFilters} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">

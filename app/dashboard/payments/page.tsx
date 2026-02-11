@@ -1,17 +1,83 @@
 import { prisma } from "@/lib/db";
-import {
-  Plus,
-  Check,
-  Clock,
-  XCircle,
-  Filter,
-  Download,
-} from "lucide-react";
+import { Plus, Check, Clock, XCircle, Download, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { SearchInput } from "@/components/ui/search-input";
+import { FilterDialog, FilterCategory } from "@/components/ui/filter-dialog";
+import type { Prisma } from "@/generated/prisma/client";
 
-export default async function PaymentsPage() {
+export default async function PaymentsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{
+    query?: string;
+    status?: string;
+    mode?: string;
+    dateStart?: string;
+    dateEnd?: string;
+    amountMin?: string;
+    amountMax?: string;
+  }>;
+}) {
+  const query = (await searchParams)?.query || "";
+  const statusParam = (await searchParams)?.status || "";
+  const modeParam = (await searchParams)?.mode || "";
+
+  const dateStartString = (await searchParams)?.dateStart;
+  const dateStart = dateStartString ? new Date(dateStartString) : undefined;
+  const dateEndString = (await searchParams)?.dateEnd;
+  const dateEnd = dateEndString ? new Date(dateEndString) : undefined;
+  const amountMinString = (await searchParams)?.amountMin;
+  const amountMin = amountMinString ? parseFloat(amountMinString) : undefined;
+  const amountMaxString = (await searchParams)?.amountMax;
+  const amountMax = amountMaxString ? parseFloat(amountMaxString) : undefined;
+
+  const andConditions: Prisma.PaymentWhereInput[] = [
+    query
+      ? {
+          customer: { name: { contains: query, mode: "insensitive" } },
+        }
+      : {},
+  ];
+
+  if (statusParam) {
+    andConditions.push({
+      status: statusParam as "PAID" | "PENDING" | "FAILED",
+    });
+  }
+
+  if (modeParam) {
+    // If mode is one of the options, we match exactly (insensitive)
+    // or if it's text search, contains
+    andConditions.push({
+      paymentMode: { contains: modeParam, mode: "insensitive" },
+    });
+  }
+
+  if (dateStart || dateEnd) {
+    andConditions.push({
+      paymentDate: {
+        gte: dateStart,
+        lte: dateEnd,
+      },
+    });
+  }
+
+  if (amountMin !== undefined || amountMax !== undefined) {
+    andConditions.push({
+      amount: {
+        gte: amountMin,
+        lte: amountMax,
+      },
+    });
+  }
+
+  const whereClause: Prisma.PaymentWhereInput = {
+    AND: andConditions,
+  };
+
   const payments = await prisma.payment.findMany({
+    where: whereClause,
     include: {
       customer: true,
     },
@@ -32,6 +98,42 @@ export default async function PaymentsPage() {
     .filter((p) => p.status === "FAILED")
     .reduce((sum, p) => sum + p.amount, 0);
 
+  const paymentFilters: FilterCategory[] = [
+    {
+      id: "status",
+      label: "Status",
+      type: "radio",
+      options: [
+        { label: "All", value: "" },
+        { label: "Paid", value: "PAID" },
+        { label: "Pending", value: "PENDING" },
+        { label: "Failed", value: "FAILED" },
+      ],
+    },
+    {
+      id: "mode",
+      label: "Payment Method",
+      type: "radio",
+      options: [
+        { label: "Any", value: "" },
+        { label: "Cash", value: "CASH" },
+        { label: "UPI", value: "UPI" },
+        { label: "Bank Transfer", value: "BANK_TRANSFER" },
+        { label: "Cheque", value: "CHEQUE" },
+      ],
+    },
+    {
+      id: "date",
+      label: "Payment Date",
+      type: "date-range",
+    },
+    {
+      id: "amount",
+      label: "Amount",
+      type: "range",
+    },
+  ];
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -50,6 +152,13 @@ export default async function PaymentsPage() {
           <Plus className="mr-2 h-4 w-4" />
           Record Payment
         </Link>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+        <div className="w-full sm:max-w-xs">
+          <SearchInput placeholder="Search by customer..." />
+        </div>
+        <FilterDialog filters={paymentFilters} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
