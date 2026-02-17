@@ -107,8 +107,27 @@ async function main() {
       },
     });
 
-    // 3. Create Payment record if Amount is present
+    // 3. Create Warranty AMC if applicable
+    const warrantyEnd = parseCustomDate(warrantyDateStr);
     const amount = parseFloat(amountStr?.replace(/[^0-9.]/g, "") || "0");
+    let amc = null;
+
+    if (warrantyEnd && amount > 0) {
+      // Create AMC with the actual amount (covers installation + 1 year maintenance)
+      amc = await prisma.aMCContract.create({
+        data: {
+          customerId: customer.id,
+          serviceId: service.id,
+          startDate: installDate,
+          endDate: warrantyEnd,
+          renewalDate: warrantyEnd, // Usually renewal is at end of contract
+          amount: amount, // Use actual amount from CSV
+          status: AMCStatus.ACTIVE,
+        },
+      });
+    }
+
+    // 4. Create Payment record if Amount is present
     if (amount > 0) {
       // Determine payment status enum
       let status: PaymentStatus = PaymentStatus.PENDING;
@@ -121,28 +140,11 @@ async function main() {
       await prisma.payment.create({
         data: {
           customerId: customer.id,
+          amcId: amc?.id, // Link payment to the AMC contract
           amount: amount,
           status: status,
           paymentMode: "CASH", // Defaulting to CASH as mode isn't clear in standard columns, or could be 'Pending'
           paymentDate: installDate, // Assuming payment date is same as install date for now
-        },
-      });
-    }
-
-    // 4. Create Warranty AMC if applicable
-    const warrantyEnd = parseCustomDate(warrantyDateStr);
-    if (warrantyEnd) {
-      // Assuming warranty starts from installation date
-      // status ACTIVE since it's a warranty period
-      await prisma.aMCContract.create({
-        data: {
-          customerId: customer.id,
-          serviceId: service.id,
-          startDate: installDate,
-          endDate: warrantyEnd,
-          renewalDate: warrantyEnd, // Usually renewal is at end of contract
-          amount: 0, // Warranty usually implies included cost, or we could parse 'Amount' column
-          status: AMCStatus.ACTIVE,
         },
       });
     }

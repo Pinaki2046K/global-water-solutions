@@ -3,6 +3,7 @@ import { Header } from "@/components/dashboard/header";
 import { auth } from "@/lib/auth"; // Server-side auth check
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Toaster } from "sonner";
 
 export default async function DashboardLayout({
   children,
@@ -26,6 +27,7 @@ export default async function DashboardLayout({
           {children}
         </main>
       </div>
+      <Toaster position="top-right" richColors />
     </div>
   );
 }

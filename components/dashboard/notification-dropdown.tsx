@@ -5,8 +5,9 @@ import { Bell } from "lucide-react";
 import { NotificationList } from "@/components/dashboard/notification-list";
 import {
   getUserNotifications,
-  markAllNotificationsAsRead
+  markAllNotificationsAsRead,
 } from "@/app/dashboard/notifications/actions";
+import Link from "next/link";
 
 export function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,6 +69,15 @@ export function NotificationDropdown() {
             )}
           </div>
           <NotificationList embedded={true} />
+          <div className="border-t border-gray-100 bg-gray-50/50">
+            <Link
+              href="/dashboard/notifications"
+              onClick={() => setIsOpen(false)}
+              className="block px-4 py-3 text-center text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:bg-gray-100 transition-colors"
+            >
+              View All Notifications
+            </Link>
+          </div>
         </div>
       )}
     </div>

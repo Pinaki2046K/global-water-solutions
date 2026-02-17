@@ -1,11 +1,12 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function ServiceDetailsPage({
+export default async function ServiceDetailsPage({
   params,
 }: {
-  params: { serviceId: string };
+  params: Promise<{ serviceId: string }>;
 }) {
+  const { serviceId } = await params;
   return (
     <div className="space-y-6">
       <Link
@@ -18,7 +19,7 @@ export default function ServiceDetailsPage({
       <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
         <h1 className="text-xl font-bold text-gray-900">Service Details</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Details for service ID: {params.serviceId}
+          Details for service ID: {serviceId}
         </p>
       </div>
     </div>

@@ -1,20 +1,19 @@
-import {
-  Users,
-  FileText,
-  MessageSquare,
-  IndianRupee,
-} from "lucide-react";
+import { Users, FileText, MessageSquare, IndianRupee } from "lucide-react";
 import {
   getDashboardStats,
   getMonthlyRevenue,
   getRecentActivity,
 } from "@/app/dashboard/actions";
+import { checkAndCreateServiceNotifications } from "@/app/dashboard/notifications/actions";
 import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import Link from "next/link";
 
 export default async function DashboardPage() {
+  // Check for services due maintenance and create notifications
+  await checkAndCreateServiceNotifications();
+
   const stats = await getDashboardStats();
 
   const revenueData = await getMonthlyRevenue();

@@ -1343,7 +1343,8 @@ export const ServiceScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   serviceType: 'serviceType',
-  installationDate: 'installationDate'
+  installationDate: 'installationDate',
+  nextServiceDueDate: 'nextServiceDueDate'
 } as const
 
 export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]

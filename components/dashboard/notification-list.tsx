@@ -5,11 +5,11 @@ import { formatDistanceToNow } from "date-fns";
 import {
   getUserNotifications,
   markNotificationAsRead,
-  seedDemoNotifications,
   Notification,
 } from "@/app/dashboard/notifications/actions";
-import { Bell, Check } from "lucide-react";
+import { Bell, Check, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface NotificationListProps {
   embedded?: boolean;
@@ -21,8 +21,6 @@ export function NotificationList({ embedded = false }: NotificationListProps) {
 
   useEffect(() => {
     async function fetch() {
-      // Seed if empty for demo purposes
-      await seedDemoNotifications();
       const data = await getUserNotifications();
       setNotifications(data);
       setLoading(false);
@@ -68,34 +66,52 @@ export function NotificationList({ embedded = false }: NotificationListProps) {
         <div
           key={notification.id}
           className={cn(
-            "p-4 hover:bg-gray-50 transition-colors flex gap-3 relative group",
+            "relative group",
             !notification.isRead && "bg-indigo-50/30",
           )}
         >
-          <div className="flex-1 space-y-1">
-            <h4 className="text-sm font-semibold text-gray-900 uppercase">
-              {notification.title}
-            </h4>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              {notification.message}
-            </p>
-            <p className="text-xs text-gray-400">
-              {formatDistanceToNow(new Date(notification.createdAt), {
-                addSuffix: true,
-              })}
-            </p>
-          </div>
+          <Link
+            href={`/dashboard/notifications/${notification.id}`}
+            className="block p-4 hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex gap-3">
+              <div className="flex-1 space-y-1">
+                <h4 className="text-sm font-semibold text-gray-900 uppercase">
+                  {notification.title}
+                </h4>
+                <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">
+                  {notification.message.replace(/\[Service ID:.*?\]/g, "")}
+                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-gray-400">
+                    {formatDistanceToNow(new Date(notification.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                  <span className="text-xs text-indigo-600 font-medium flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    View Details
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </span>
+                </div>
+              </div>
+              {!notification.isRead && (
+                <div className="flex-shrink-0 mt-1">
+                  <div className="h-2 w-2 rounded-full bg-indigo-600" />
+                </div>
+              )}
+            </div>
+          </Link>
           {!notification.isRead && (
             <button
-              onClick={() => handleMarkRead(notification.id)}
-              className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-indigo-600 transition-all bg-white rounded-full shadow-sm border border-gray-100"
+              onClick={(e) => {
+                e.preventDefault();
+                handleMarkRead(notification.id);
+              }}
+              className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-indigo-600 transition-all bg-white rounded-full shadow-sm border border-gray-100 z-10"
               title="Mark as read"
             >
               <Check className="h-3 w-3" />
             </button>
-          )}
-          {!notification.isRead && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-indigo-600 opacity-100 group-hover:opacity-0 transition-opacity" />
           )}
         </div>
       ))}
