@@ -2,29 +2,178 @@ import { prisma } from "@/lib/db";
 import { Plus, Calendar, RotateCw, FileText } from "lucide-react";
 import Link from "next/link";
 import { AMCsGrid } from "@/components/dashboard/amcs/amcs-grid";
+import { SearchInput } from "@/components/ui/search-input";
+import { FilterDialog, FilterCategory } from "@/components/ui/filter-dialog";
+import { addDays } from "date-fns";
+import { AMCStatus, type Prisma } from "@/generated/prisma/client";
 
-export default async function AMCContractsPage() {
+export default async function AMCContractsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{
+    query?: string;
+    status?: string;
+    startDateStart?: string;
+    startDateEnd?: string;
+    endDateStart?: string;
+    endDateEnd?: string;
+    amountMin?: string;
+    amountMax?: string;
+    model?: string;
+  }>;
+}) {
+  const query = (await searchParams)?.query || "";
+  const statusParam = (await searchParams)?.status || "";
+
+  // Date Filters
+  const startDateStartString = (await searchParams)?.startDateStart;
+  const startDateStart = startDateStartString ? new Date(startDateStartString) : undefined;
+  const startDateEndString = (await searchParams)?.startDateEnd;
+  const startDateEnd = startDateEndString ? new Date(startDateEndString) : undefined;
+  const endDateStartString = (await searchParams)?.endDateStart;
+  const endDateStart = endDateStartString ? new Date(endDateStartString) : undefined;
+  const endDateEndString = (await searchParams)?.endDateEnd;
+  const endDateEnd = endDateEndString ? new Date(endDateEndString) : undefined;
+
+  // Amount Filters
+  const amountMinString = (await searchParams)?.amountMin;
+  const amountMin = amountMinString ? parseFloat(amountMinString) : undefined;
+  const amountMaxString = (await searchParams)?.amountMax;
+  const amountMax = amountMaxString ? parseFloat(amountMaxString) : undefined;
+
+  // Model Filter
+  const modelQuery = (await searchParams)?.model || "";
+
+  const whereClause: Prisma.AMCContractWhereInput = {};
+  const andConditions: Prisma.AMCContractWhereInput[] = [];
+
+  if (query) {
+    andConditions.push({
+      customer: {
+        name: { contains: query, mode: "insensitive" as const },
+      },
+    });
+  }
+
+  // Status Filter Logic
+  if (statusParam === "expiring_soon") {
+    const today = new Date();
+    const thirtyDaysLater = addDays(today, 30);
+    andConditions.push({
+      status: "ACTIVE",
+      endDate: {
+        gte: today,
+        lte: thirtyDaysLater,
+      },
+    });
+  } else if (statusParam) {
+    // Handles ACTIVE, EXPIRED, PENDING_PAYMENT
+    andConditions.push({ status: statusParam as AMCStatus });
+  }
+
+  // Date Range Logic
+  if (startDateStart || startDateEnd) {
+    andConditions.push({
+      startDate: {
+        gte: startDateStart,
+        lte: startDateEnd,
+      },
+    });
+  }
+  if (endDateStart || endDateEnd) {
+    andConditions.push({
+      endDate: {
+        gte: endDateStart,
+        lte: endDateEnd,
+      },
+    });
+  }
+
+  // Amount Logic
+  if (amountMin !== undefined || amountMax !== undefined) {
+    andConditions.push({
+      amount: {
+        gte: amountMin,
+        lte: amountMax,
+      },
+    });
+  }
+
+  // Model/Capacity Logic (Service Type)
+  if (modelQuery) {
+    andConditions.push({
+      service: {
+        serviceType: { contains: modelQuery, mode: "insensitive" },
+      },
+    });
+  }
+
+  if (andConditions.length > 0) {
+    whereClause.AND = andConditions;
+  }
+
   const amcs = await prisma.aMCContract.findMany({
+    where: whereClause,
     include: {
       customer: true,
       service: true,
       payments: true,
     },
     orderBy: {
-      endDate: "asc",
+      createdAt: "desc",
     },
   });
 
+  const amcFilters: FilterCategory[] = [
+    {
+      id: "status",
+      label: "Status",
+      type: "radio",
+      options: [
+        { label: "All", value: "" },
+        { label: "Active", value: "ACTIVE" },
+        { label: "Expired", value: "EXPIRED" },
+        { label: "Pending Payment", value: "PENDING_PAYMENT" },
+        { label: "Expiring Soon (30 Days)", value: "expiring_soon" },
+      ],
+    },
+    {
+      id: "startDate",
+      label: "Start Date",
+      type: "date-range",
+    },
+    {
+      id: "endDate",
+      label: "End Date",
+      type: "date-range",
+    },
+    {
+      id: "amount",
+      label: "Amount",
+      type: "range",
+    },
+    {
+      id: "model",
+      label: "Model / Capacity",
+      type: "text",
+      placeholder: "Search Model or Capacity...",
+    },
+  ];
+
   const now = new Date();
+
+  // Stats based on currently filtered view
   const activeCount = amcs.filter(
     (a) => a.status === "ACTIVE" && new Date(a.endDate) > now,
   ).length;
+
   const expiringSoonCount = amcs.filter((a) => {
     const endDate = new Date(a.endDate);
     const diffTime = endDate.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays > 0 && diffDays <= 30 && a.status === "ACTIVE";
   }).length;
+
   const expiredCount = amcs.filter(
     (a) => a.status === "EXPIRED" || new Date(a.endDate) < now,
   ).length;
@@ -49,7 +198,13 @@ export default async function AMCContractsPage() {
         </Link>
       </div>
 
-      {/* Stats Row */}
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+        <div className="relative w-full max-w-md">
+          <SearchInput placeholder="Search by customer..." />
+        </div>
+        <FilterDialog filters={amcFilters} />
+      </div>
+
       <div className="grid gap-6 md:grid-cols-3">
         <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm shadow-gray-200/50 flex items-center gap-4">
           <div className="rounded-full bg-green-50 p-3 text-green-600">

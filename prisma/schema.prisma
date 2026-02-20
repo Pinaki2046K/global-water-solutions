@@ -122,10 +122,11 @@ model Customer {
 }
 
 model Service {
-  id               String   @id @default(uuid())
-  customerId       String
-  serviceType      String
-  installationDate DateTime
+  id                   String   @id @default(uuid())
+  customerId           String
+  serviceType          String
+  installationDate     DateTime
+  nextServiceDueDate   DateTime @default(dbgenerated("now() + interval '3 months'"))
 
   customer     Customer      @relation(fields: [customerId], references: [id])
   complaints   Complaint[]

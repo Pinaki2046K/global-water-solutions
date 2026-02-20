@@ -1,11 +1,12 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function AMCDetailsPage({
+export default async function AMCDetailsPage({
   params,
 }: {
-  params: { amcId: string };
+  params: Promise<{ amcId: string }>;
 }) {
+  const { amcId } = await params;
   return (
     <div className="space-y-6">
       <Link
@@ -18,7 +19,7 @@ export default function AMCDetailsPage({
       <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
         <h1 className="text-xl font-bold text-gray-900">AMC Details</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Details for contract ID: {params.amcId}
+          Details for contract ID: {amcId}
         </p>
       </div>
     </div>

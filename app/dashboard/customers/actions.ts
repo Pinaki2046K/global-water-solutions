@@ -48,7 +48,15 @@ export async function createCustomer(formData: FormData) {
   redirect("/dashboard/customers");
 }
 
-export async function getCustomers(query?: string) {
+export async function getCustomers(query?: string, sort?: string) {
+  let orderBy: any = { createdAt: "desc" };
+
+  if (sort === "name_asc") {
+    orderBy = { name: "asc" };
+  } else if (sort === "name_desc") {
+    orderBy = { name: "desc" };
+  }
+
   return await prisma.customer.findMany({
     where: query
       ? {
@@ -59,9 +67,7 @@ export async function getCustomers(query?: string) {
           ],
         }
       : undefined,
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: orderBy,
     include: {
       _count: {
         select: { services: true, amcs: true },

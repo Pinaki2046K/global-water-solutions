@@ -1,11 +1,12 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function ComplaintDetailsPage({
+export default async function ComplaintDetailsPage({
   params,
 }: {
-  params: { complaintId: string };
+  params: Promise<{ complaintId: string }>;
 }) {
+  const { complaintId } = await params;
   return (
     <div className="space-y-6">
       <Link
@@ -18,7 +19,7 @@ export default function ComplaintDetailsPage({
       <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
         <h1 className="text-xl font-bold text-gray-900">Complaint Details</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Details for complaint ticket: {params.complaintId}
+          Details for complaint ticket: {complaintId}
         </p>
       </div>
     </div>

@@ -1,21 +1,30 @@
 import Link from "next/link";
-import {
-  Plus,
-  Search,
-  MapPin,
-  Phone,
-  MoreHorizontal,
-  Filter,
-} from "lucide-react";
+import { Plus, Phone, MapPin, MoreHorizontal } from "lucide-react";
 import { getCustomers } from "./actions";
+import { SearchInput } from "@/components/ui/search-input";
+import { FilterDialog, FilterCategory } from "@/components/ui/filter-dialog";
 
 export default async function CustomersPage({
   searchParams,
 }: {
-  searchParams?: { query?: string };
+  searchParams?: Promise<{ query?: string; sort?: string }>;
 }) {
-  const query = searchParams?.query || "";
-  const customers = await getCustomers(query);
+  const query = (await searchParams)?.query || "";
+  const sort = (await searchParams)?.sort || "";
+  const customers = await getCustomers(query, sort);
+
+  const customerFilters: FilterCategory[] = [
+    {
+      id: "sort",
+      label: "Sort By",
+      type: "radio",
+      options: [
+        { label: "Newest First", value: "" }, // Default
+        { label: "Name (A-Z)", value: "name_asc" },
+        { label: "Name (Z-A)", value: "name_desc" },
+      ],
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -38,23 +47,10 @@ export default async function CustomersPage({
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full max-w-sm">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <Search className="h-4 w-4 text-gray-400" />
-          </div>
-          <form className="w-full">
-            <input
-              name="query"
-              className="block w-full rounded-xl border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm"
-              placeholder="Search by name, phone or email..."
-              defaultValue={query}
-            />
-          </form>
+        <div className="relative w-full max-w-md">
+          <SearchInput placeholder="Search by name, phone or email..." />
         </div>
-        <button className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm">
-          <Filter className="h-4 w-4" />
-          Filter
-        </button>
+        <FilterDialog filters={customerFilters} />
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
