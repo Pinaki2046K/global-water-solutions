@@ -10,12 +10,14 @@ import {
   FileText,
   CreditCard,
   MessageSquare,
-  BarChart3, // Using for Analytics as per previous code, looks like a pie chart in image?
+  BarChart3,
   LogOut,
-  Settings, // Switching to PieChart if available, or just keeping BarChart3
+  Settings,
+  ChevronRight,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -42,19 +44,30 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex h-full w-64 flex-col bg-white border-r border-gray-100/50 transition-all duration-300">
-      <div className="flex h-20 items-center px-6">
-        <div className="flex items-center gap-3 font-bold text-xl tracking-tight text-gray-900">
-          <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 shadow-lg shadow-indigo-200">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600" />
-            <div className="relative h-2.5 w-2.5 rounded-full bg-white ring-4 ring-white/20" />
+    <div className="flex h-full w-[280px] flex-col bg-white/40 backdrop-blur-2xl border-r border-slate-200/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative z-20">
+      
+      {/* ── Brand Header ── */}
+      <div className="flex h-24 items-center px-8 relative">
+        <div className="flex items-center gap-4 font-black text-2xl tracking-tight text-slate-800">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2e3458] to-[#4f5fa8] shadow-[0_4px_12px_rgba(46,52,88,0.3)]">
+            <div className="absolute inset-0 rounded-2xl border border-white/20" />
+            <div className="relative h-3 w-3 rounded-full bg-white shadow-sm" />
           </div>
-          <span>GWS ERP</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-500">
+            GWS ERP
+          </span>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-4 px-4">
-        <nav className="space-y-1">
+      {/* ── Main Navigation ── */}
+      <div className="flex-1 overflow-y-auto py-6 px-4 no-scrollbar">
+        <div className="px-4 mb-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+            Main Menu
+          </p>
+        </div>
+        
+        <nav className="space-y-1.5 relative">
           {navigation.map((item) => {
             const isOverview = item.href === "/dashboard";
             const isCurrent = isOverview
@@ -66,55 +79,80 @@ export function Sidebar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative overflow-hidden",
-                  isCurrent
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900",
+                  "group relative flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-bold transition-colors duration-300 outline-none",
+                  isCurrent ? "text-[#2e3458]" : "text-slate-500 hover:text-slate-800"
                 )}
               >
+                {/* ── Framer Motion Active Background ── */}
                 {isCurrent && (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-50" />
+                  <motion.div
+                    layoutId="sidebar-active-bg"
+                    className="absolute inset-0 rounded-2xl bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-slate-200/60"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
                 )}
-                <item.icon
+
+                {/* ── Framer Motion Active Accent Pill ── */}
+                {isCurrent && (
+                  <motion.div
+                    layoutId="sidebar-active-pill"
+                    className="absolute left-0 top-[15%] h-[70%] w-1.5 rounded-r-full bg-[#2e3458] shadow-[0_0_10px_rgba(46,52,88,0.4)]"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
+                )}
+
+                <div className="relative z-10 flex items-center">
+                  <item.icon
+                    className={cn(
+                      "mr-3 h-5 w-5 flex-shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                      isCurrent
+                        ? "text-[#2e3458]"
+                        : "text-slate-400 group-hover:text-slate-500 group-hover:scale-110"
+                    )}
+                    aria-hidden="true"
+                  />
+                  <span>{item.name}</span>
+                </div>
+
+                {/* Subtle hover arrow */}
+                <ChevronRight 
                   className={cn(
-                    "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
-                    isCurrent
-                      ? "text-white"
-                      : "text-gray-400 group-hover:text-gray-500",
-                  )}
-                  aria-hidden="true"
+                    "relative z-10 w-4 h-4 transition-all duration-300 ease-out opacity-0 -translate-x-2",
+                    !isCurrent && "group-hover:opacity-100 group-hover:translate-x-0 text-slate-300"
+                  )} 
                 />
-                <span className="relative z-10">{item.name}</span>
               </Link>
             );
           })}
         </nav>
       </div>
 
-      {/* Footer / Settings Area */}
-      {/* Not explicitly in the screenshot attached to this request, but usually good to keep settings */}
-      {/* Assuming we want to keep it minimal as per "Sidebar like this" which ends at Analytics */}
-      {/* I will keep Settings/SignOut but style them to match */}
-
+      {/* ── Footer / Settings Area ── */}
       <div className="p-4 mt-auto">
-        <div className="border-t border-gray-100 pt-4 space-y-1">
+        <div className="border-t border-slate-200/60 pt-4 space-y-1.5 px-4 pb-4">
+          
           <Link
             href="/dashboard/settings"
             className={cn(
-              "group flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900",
-              pathname?.startsWith("/dashboard/settings") &&
-                "bg-gray-100 text-gray-900",
+              "group relative flex items-center rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-300",
+              pathname?.startsWith("/dashboard/settings")
+                ? "bg-white text-[#2e3458] shadow-sm border border-slate-200/60"
+                : "text-slate-500 hover:bg-slate-100/50 hover:text-slate-800"
             )}
           >
-            <Settings className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-            Settings
+            <Settings className="mr-3 h-5 w-5 text-slate-400 transition-transform duration-500 group-hover:rotate-90 group-hover:text-slate-500" />
+            <span>Settings</span>
           </Link>
+
           <button
             onClick={handleSignOut}
-            className="flex w-full items-center rounded-xl px-3 py-3 text-sm font-medium text-red-500 hover:bg-red-50 transition-all"
+            className="group relative flex w-full items-center rounded-2xl px-4 py-3 text-sm font-bold text-red-500 transition-all duration-300 overflow-hidden hover:bg-red-50 hover:shadow-sm hover:border-red-100 border border-transparent"
           >
-            <LogOut className="mr-3 h-5 w-5" />
-            Sign Out
+            {/* Sweeping Shine Effect on Logout */}
+            <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-red-100/40 to-transparent transition-transform duration-700 ease-in-out group-hover:translate-x-[150%]" />
+            
+            <LogOut className="relative z-10 mr-3 h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
+            <span className="relative z-10">Sign Out</span>
           </button>
         </div>
       </div>
