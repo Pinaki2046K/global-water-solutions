@@ -9,6 +9,8 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
+import { motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 
 interface OverviewChartProps {
   data: {
@@ -26,17 +28,25 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border border-gray-100 p-3 rounded-xl shadow-[0_10px_15px_-3px_rgb(0,0,0,0.1)]">
-        <p className="text-gray-500 text-sm mb-1 font-medium">{label}</p>
-        <div className="flex items-end gap-2">
-          <span className="text-indigo-600 text-lg font-bold">
-            {`₹${payload[0].value.toLocaleString()}`}
+      <motion.div 
+        initial={{ opacity: 0, y: 5, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="bg-white/90 backdrop-blur-xl border border-white/60 p-4 rounded-2xl shadow-[0_16px_40px_-10px_rgba(46,52,88,0.2)]"
+      >
+        <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+          {label}
+        </p>
+        <div className="flex items-center gap-3">
+          {/* Pulsing indicator dot */}
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
           </span>
-          <span className="text-gray-400 text-xs font-medium mb-1">
-            Revenue
+          <span className="text-[#2e3458] text-2xl font-black tracking-tight">
+            ₹{payload[0].value.toLocaleString()}
           </span>
         </div>
-      </div>
+      </motion.div>
     );
   }
   return null;
@@ -44,28 +54,44 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 
 export function OverviewChart({ data }: OverviewChartProps) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md h-full">
-      <div className="flex items-center justify-between mb-8">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+      className="relative overflow-hidden rounded-[2.5rem] border border-white/60 bg-white/40 backdrop-blur-xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_16px_40px_rgb(46,52,88,0.06)] hover:bg-white/50 h-full flex flex-col"
+    >
+      {/* Ambient Inner Glow */}
+      <div className="absolute -top-32 -right-32 h-64 w-64 rounded-full bg-indigo-400/10 blur-3xl pointer-events-none" />
+
+      {/* ── Header Area ── */}
+      <div className="relative z-10 flex items-center justify-between mb-8">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">Revenue Analytics</h3>
-          <p className="text-sm text-gray-500">Monthly revenue collection</p>
+          <h3 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            Revenue Analytics
+          </h3>
+          <p className="text-sm font-medium text-slate-500 mt-1">
+            Monthly revenue collection tracking
+          </p>
         </div>
-        <div className="relative">
-          <select className="appearance-none bg-gray-50 border-none text-gray-900 text-sm font-medium rounded-lg block w-full p-2.5 pr-8 focus:ring-0 cursor-pointer">
+        
+        {/* ── Custom Glassmorphic Dropdown ── */}
+        <div className="relative group">
+          <select className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 appearance-none">
             <option>Last 6 Months</option>
+            <option>Last Year</option>
+            <option>All Time</option>
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg
-              className="fill-current h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-            >
-              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-            </svg>
+          <div className="flex items-center gap-2 bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-xl px-4 py-2.5 shadow-sm transition-all duration-300 group-hover:bg-white/90 group-hover:shadow-md group-hover:border-indigo-200">
+            <span className="text-sm font-bold text-slate-600 group-hover:text-[#2e3458] transition-colors">
+              Last 6 Months
+            </span>
+            <ChevronDown className="w-4 h-4 text-slate-400 transition-transform duration-300 group-hover:text-indigo-500 group-hover:rotate-180" />
           </div>
         </div>
       </div>
-      <div className="h-[300px] w-full">
+
+      {/* ── Chart Area ── */}
+      <div className="relative z-10 flex-1 w-full min-h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -73,28 +99,32 @@ export function OverviewChart({ data }: OverviewChartProps) {
           >
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                <stop offset="5%" stopColor="#4f5fa8" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#4f5fa8" stopOpacity={0.0} />
               </linearGradient>
             </defs>
             <CartesianGrid
-              strokeDasharray="3 3"
+              strokeDasharray="4 4"
               vertical={false}
-              stroke="#E5E7EB"
+              stroke="#cbd5e1"
+              strokeOpacity={0.4}
             />
             <XAxis
               dataKey="name"
-              stroke="#9CA3AF"
+              stroke="#94a3b8"
               fontSize={12}
+              fontWeight={600}
               tickLine={false}
               axisLine={false}
-              dy={10}
+              dy={15}
             />
             <YAxis
-              stroke="#9CA3AF"
+              stroke="#94a3b8"
               fontSize={12}
+              fontWeight={600}
               tickLine={false}
               axisLine={false}
+              dx={-10}
               tickFormatter={(value) =>
                 `₹${value >= 1000 ? `${value / 1000}k` : value}`
               }
@@ -102,23 +132,31 @@ export function OverviewChart({ data }: OverviewChartProps) {
             <Tooltip
               content={<CustomTooltip />}
               cursor={{
-                stroke: "#6366f1",
+                stroke: "#a5b4fc",
                 strokeWidth: 2,
                 strokeDasharray: "4 4",
               }}
+              isAnimationActive={true}
+              animationDuration={200}
             />
             <Area
               type="monotone"
               dataKey="revenue"
-              stroke="#6366f1"
-              strokeWidth={3}
+              stroke="#4f5fa8"
+              strokeWidth={4}
               fillOpacity={1}
               fill="url(#colorRevenue)"
-              activeDot={{ r: 6, strokeWidth: 0, fill: "#4f46e5" }}
+              activeDot={{ 
+                r: 6, 
+                strokeWidth: 4, 
+                stroke: "#ffffff", 
+                fill: "#2e3458",
+                className: "shadow-[0_0_15px_rgba(46,52,88,0.5)]" 
+              }}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </motion.div>
   );
 }
