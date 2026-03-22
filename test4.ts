@@ -1,0 +1,1 @@
+import { prisma } from "./lib/db"; import { writeFileSync } from "fs"; async function m() { const svcs = await prisma.service.findMany({ where: { nextServiceDueDate: { lte: new Date("2026-12-31T00:00:00Z") } }, orderBy: { nextServiceDueDate: "asc" } }); writeFileSync("svcs.json", JSON.stringify(svcs.map(s => s.nextServiceDueDate), null, 2)); }; m().catch(console.error);

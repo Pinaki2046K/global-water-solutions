@@ -4,7 +4,10 @@ import {
   getMonthlyRevenue,
   getRecentActivity,
 } from "@/app/dashboard/actions";
-import { checkAndCreateServiceNotifications } from "@/app/dashboard/notifications/actions";
+import {
+  checkAndCreateServiceNotifications,
+  checkAndCreateContractExpiryNotifications,
+} from "@/app/dashboard/notifications/actions";
 import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { MetricCard } from "@/components/dashboard/metric-card";
@@ -13,6 +16,8 @@ import Link from "next/link";
 export default async function DashboardPage() {
   // Check for services due maintenance and create notifications
   await checkAndCreateServiceNotifications();
+  // Check for expiring contracts and create notifications
+  await checkAndCreateContractExpiryNotifications();
 
   const stats = await getDashboardStats();
 
@@ -80,10 +85,10 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-8">
           <OverviewChart data={revenueData} />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-8">
           <RecentActivity activities={recentActivity} />
         </div>
       </div>

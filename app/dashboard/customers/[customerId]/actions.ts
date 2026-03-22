@@ -56,11 +56,16 @@ export async function addService(customerId: string, formData: FormData) {
     return { error: "Invalid data" };
   }
 
+  // Calculate next service due date by adding 3 months to installation date
+  const nextDueDate = new Date(validated.data.installationDate);
+  nextDueDate.setMonth(nextDueDate.getMonth() + 3);
+
   await prisma.service.create({
     data: {
       customerId,
       serviceType: validated.data.serviceType,
       installationDate: validated.data.installationDate,
+      nextServiceDueDate: nextDueDate, // Explictly set based on installation date
     },
   });
 

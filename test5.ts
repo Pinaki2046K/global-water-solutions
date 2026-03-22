@@ -1,0 +1,1 @@
+import { prisma } from "./lib/db"; import { writeFileSync } from "fs"; async function m() { const svcs = await prisma.service.findMany({ orderBy: { installationDate: "asc" } }); writeFileSync("svcs2.json", JSON.stringify(svcs.map(s => ({ inst: s.installationDate, due: s.nextServiceDueDate })), null, 2)); }; m().catch(console.error);

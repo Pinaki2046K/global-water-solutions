@@ -1,7 +1,7 @@
 import { getUserNotifications } from "@/app/dashboard/notifications/actions";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
-import { Bell, Check, AlertCircle, Info, CheckCircle } from "lucide-react";
+import { Bell, AlertCircle, Info, CheckCircle } from "lucide-react";
 
 export default async function NotificationsPage() {
   const notifications = await getUserNotifications();

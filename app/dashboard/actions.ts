@@ -252,3 +252,22 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
 
   return results;
 }
+
+export async function getServiceReminders() {
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+
+  return await prisma.service.findMany({
+    where: {
+      nextServiceDueDate: {
+        lte: today,
+      },
+    },
+    include: {
+      customer: true,
+    },
+    orderBy: {
+      nextServiceDueDate: "asc",
+    },
+  });
+}

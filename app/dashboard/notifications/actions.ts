@@ -139,6 +139,93 @@ export async function checkAndCreateServiceNotifications() {
   };
 }
 
+// Check for AMC contracts expiring soon and create notifications
+export async function checkAndCreateContractExpiryNotifications() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) return { error: "Unauthorized" };
+
+  // Only admins can check contract notifications
+  if (session.user.role !== "admin") {
+    return { error: "Only admins can view contract notifications" };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const thirtyDaysLater = new Date(today);
+  thirtyDaysLater.setDate(today.getDate() + 30);
+
+  // Find all active contracts expiring within the next 30 days
+  const contractsExpiring = await prisma.aMCContract.findMany({
+    where: {
+      status: "ACTIVE",
+      endDate: {
+        gte: today,
+        lte: thirtyDaysLater,
+      },
+    },
+    include: {
+      customer: true,
+      service: true,
+    },
+  });
+
+  console.log(`📊 Found ${contractsExpiring.length} contracts expiring soon`);
+
+  if (contractsExpiring.length === 0) {
+    return { count: 0, message: "No contracts expiring soon" };
+  }
+
+  // Create notifications for admin only
+  const adminUsers = await prisma.user.findMany({
+    where: {
+      role: "admin",
+    },
+  });
+
+  console.log(`👥 Found ${adminUsers.length} admin users`);
+
+  let createdCount = 0;
+
+  for (const contract of contractsExpiring) {
+    for (const admin of adminUsers) {
+      // Check if notification already exists for this specific contract
+      const existingNotification = await prisma.notification.findFirst({
+        where: {
+          userId: admin.id,
+          title: "AMC CONTRACT EXPIRING SOON",
+          message: {
+            contains: contract.id, // Check for specific contract ID
+          },
+          isRead: false,
+        },
+      });
+
+      if (!existingNotification) {
+        await prisma.notification.create({
+          data: {
+            userId: admin.id,
+            title: "AMC CONTRACT EXPIRING SOON",
+            message: `AMC Contract for customer "${contract.customer.name}" (${contract.service.serviceType}) is expiring on ${contract.endDate.toLocaleDateString()}. [Contract ID: ${contract.id}]`,
+            type: "WARNING",
+            isRead: false,
+          },
+        });
+        createdCount++;
+      }
+    }
+  }
+
+  console.log(`✅ Created ${createdCount} new contract expiry notifications`);
+
+  return {
+    count: contractsExpiring.length,
+    message: "Contract expiry notifications created",
+  };
+}
+
 // Get notification with full service details
 export async function getNotificationWithServiceDetails(
   notificationId: string,
@@ -158,42 +245,73 @@ export async function getNotificationWithServiceDetails(
     return { error: "Notification not found" };
   }
 
-  // Extract service ID from message using regex
+  // Check if it's a SERVICE notification
   const serviceIdMatch = notification.message.match(/\[Service ID: ([^\]]+)\]/);
-  if (!serviceIdMatch) {
-    return { error: "Service ID not found in notification" };
-  }
 
-  const serviceId = serviceIdMatch[1];
+  if (serviceIdMatch) {
+    const serviceId = serviceIdMatch[1];
 
-  // Get full service details with customer, AMC, and payment info
-  const service = await prisma.service.findUnique({
-    where: { id: serviceId },
-    include: {
-      customer: true,
-      amcContracts: {
-        include: {
-          payments: true,
+    // Get full service details with customer, AMC, and payment info
+    const service = await prisma.service.findUnique({
+      where: { id: serviceId },
+      include: {
+        customer: true,
+        amcContracts: {
+          include: {
+            payments: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  if (!service) {
-    return { error: "Service not found" };
+    if (!service) {
+      return { error: "Service not found" };
+    }
+
+    return {
+      notification,
+      type: "service",
+      service: {
+        id: service.id,
+        serviceType: service.serviceType,
+        installationDate: service.installationDate,
+        nextServiceDueDate: service.nextServiceDueDate,
+        customer: service.customer,
+        amcContracts: service.amcContracts,
+      },
+    };
   }
 
-  return {
-    notification,
-    service: {
-      id: service.id,
-      serviceType: service.serviceType,
-      installationDate: service.installationDate,
-      nextServiceDueDate: service.nextServiceDueDate,
-      customer: service.customer,
-      amcContracts: service.amcContracts,
-    },
-  };
+  // Check if it's a CONTRACT notification
+  const contractIdMatch = notification.message.match(
+    /\[Contract ID: ([^\]]+)\]/,
+  );
+
+  if (contractIdMatch) {
+    const contractId = contractIdMatch[1];
+
+    // Get full contract details
+    const contract = await prisma.aMCContract.findUnique({
+      where: { id: contractId },
+      include: {
+        customer: true,
+        service: true,
+        payments: true,
+      },
+    });
+
+    if (!contract) {
+      return { error: "Contract not found" };
+    }
+
+    return {
+      notification,
+      type: "contract",
+      contract,
+    };
+  }
+
+  return { error: "Related entity ID not found in notification" };
 }
 
 // Mark a service as serviced and reset the due date
