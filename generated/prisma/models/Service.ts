@@ -28,7 +28,8 @@ export type ServiceMinAggregateOutputType = {
   id: string | null
   customerId: string | null
   serviceType: string | null
-  installationDate: Date | null
+  serviceRegisterDate: Date | null
+  serviceCompleteDate: Date | null
   nextServiceDueDate: Date | null
 }
 
@@ -36,7 +37,8 @@ export type ServiceMaxAggregateOutputType = {
   id: string | null
   customerId: string | null
   serviceType: string | null
-  installationDate: Date | null
+  serviceRegisterDate: Date | null
+  serviceCompleteDate: Date | null
   nextServiceDueDate: Date | null
 }
 
@@ -44,7 +46,8 @@ export type ServiceCountAggregateOutputType = {
   id: number
   customerId: number
   serviceType: number
-  installationDate: number
+  serviceRegisterDate: number
+  serviceCompleteDate: number
   nextServiceDueDate: number
   _all: number
 }
@@ -54,7 +57,8 @@ export type ServiceMinAggregateInputType = {
   id?: true
   customerId?: true
   serviceType?: true
-  installationDate?: true
+  serviceRegisterDate?: true
+  serviceCompleteDate?: true
   nextServiceDueDate?: true
 }
 
@@ -62,7 +66,8 @@ export type ServiceMaxAggregateInputType = {
   id?: true
   customerId?: true
   serviceType?: true
-  installationDate?: true
+  serviceRegisterDate?: true
+  serviceCompleteDate?: true
   nextServiceDueDate?: true
 }
 
@@ -70,7 +75,8 @@ export type ServiceCountAggregateInputType = {
   id?: true
   customerId?: true
   serviceType?: true
-  installationDate?: true
+  serviceRegisterDate?: true
+  serviceCompleteDate?: true
   nextServiceDueDate?: true
   _all?: true
 }
@@ -151,7 +157,8 @@ export type ServiceGroupByOutputType = {
   id: string
   customerId: string
   serviceType: string
-  installationDate: Date
+  serviceRegisterDate: Date
+  serviceCompleteDate: Date | null
   nextServiceDueDate: Date
   _count: ServiceCountAggregateOutputType | null
   _min: ServiceMinAggregateOutputType | null
@@ -180,7 +187,8 @@ export type ServiceWhereInput = {
   id?: Prisma.StringFilter<"Service"> | string
   customerId?: Prisma.StringFilter<"Service"> | string
   serviceType?: Prisma.StringFilter<"Service"> | string
-  installationDate?: Prisma.DateTimeFilter<"Service"> | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFilter<"Service"> | Date | string
+  serviceCompleteDate?: Prisma.DateTimeNullableFilter<"Service"> | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFilter<"Service"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   complaints?: Prisma.ComplaintListRelationFilter
@@ -191,7 +199,8 @@ export type ServiceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   serviceType?: Prisma.SortOrder
-  installationDate?: Prisma.SortOrder
+  serviceRegisterDate?: Prisma.SortOrder
+  serviceCompleteDate?: Prisma.SortOrderInput | Prisma.SortOrder
   nextServiceDueDate?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
   complaints?: Prisma.ComplaintOrderByRelationAggregateInput
@@ -205,7 +214,8 @@ export type ServiceWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ServiceWhereInput | Prisma.ServiceWhereInput[]
   customerId?: Prisma.StringFilter<"Service"> | string
   serviceType?: Prisma.StringFilter<"Service"> | string
-  installationDate?: Prisma.DateTimeFilter<"Service"> | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFilter<"Service"> | Date | string
+  serviceCompleteDate?: Prisma.DateTimeNullableFilter<"Service"> | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFilter<"Service"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   complaints?: Prisma.ComplaintListRelationFilter
@@ -216,7 +226,8 @@ export type ServiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   serviceType?: Prisma.SortOrder
-  installationDate?: Prisma.SortOrder
+  serviceRegisterDate?: Prisma.SortOrder
+  serviceCompleteDate?: Prisma.SortOrderInput | Prisma.SortOrder
   nextServiceDueDate?: Prisma.SortOrder
   _count?: Prisma.ServiceCountOrderByAggregateInput
   _max?: Prisma.ServiceMaxOrderByAggregateInput
@@ -230,14 +241,16 @@ export type ServiceScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Service"> | string
   customerId?: Prisma.StringWithAggregatesFilter<"Service"> | string
   serviceType?: Prisma.StringWithAggregatesFilter<"Service"> | string
-  installationDate?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
+  serviceRegisterDate?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
+  serviceCompleteDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Service"> | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
 }
 
 export type ServiceCreateInput = {
   id?: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutServicesInput
   complaints?: Prisma.ComplaintCreateNestedManyWithoutServiceInput
@@ -248,7 +261,8 @@ export type ServiceUncheckedCreateInput = {
   id?: string
   customerId: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
   complaints?: Prisma.ComplaintUncheckedCreateNestedManyWithoutServiceInput
   amcContracts?: Prisma.AMCContractUncheckedCreateNestedManyWithoutServiceInput
@@ -257,7 +271,8 @@ export type ServiceUncheckedCreateInput = {
 export type ServiceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutServicesNestedInput
   complaints?: Prisma.ComplaintUpdateManyWithoutServiceNestedInput
@@ -268,7 +283,8 @@ export type ServiceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   complaints?: Prisma.ComplaintUncheckedUpdateManyWithoutServiceNestedInput
   amcContracts?: Prisma.AMCContractUncheckedUpdateManyWithoutServiceNestedInput
@@ -278,14 +294,16 @@ export type ServiceCreateManyInput = {
   id?: string
   customerId: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
 }
 
 export type ServiceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -293,7 +311,8 @@ export type ServiceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -311,7 +330,8 @@ export type ServiceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   serviceType?: Prisma.SortOrder
-  installationDate?: Prisma.SortOrder
+  serviceRegisterDate?: Prisma.SortOrder
+  serviceCompleteDate?: Prisma.SortOrder
   nextServiceDueDate?: Prisma.SortOrder
 }
 
@@ -319,7 +339,8 @@ export type ServiceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   serviceType?: Prisma.SortOrder
-  installationDate?: Prisma.SortOrder
+  serviceRegisterDate?: Prisma.SortOrder
+  serviceCompleteDate?: Prisma.SortOrder
   nextServiceDueDate?: Prisma.SortOrder
 }
 
@@ -327,7 +348,8 @@ export type ServiceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   serviceType?: Prisma.SortOrder
-  installationDate?: Prisma.SortOrder
+  serviceRegisterDate?: Prisma.SortOrder
+  serviceCompleteDate?: Prisma.SortOrder
   nextServiceDueDate?: Prisma.SortOrder
 }
 
@@ -409,7 +431,8 @@ export type ServiceUpdateOneRequiredWithoutComplaintsNestedInput = {
 export type ServiceCreateWithoutCustomerInput = {
   id?: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
   complaints?: Prisma.ComplaintCreateNestedManyWithoutServiceInput
   amcContracts?: Prisma.AMCContractCreateNestedManyWithoutServiceInput
@@ -418,7 +441,8 @@ export type ServiceCreateWithoutCustomerInput = {
 export type ServiceUncheckedCreateWithoutCustomerInput = {
   id?: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
   complaints?: Prisma.ComplaintUncheckedCreateNestedManyWithoutServiceInput
   amcContracts?: Prisma.AMCContractUncheckedCreateNestedManyWithoutServiceInput
@@ -457,14 +481,16 @@ export type ServiceScalarWhereInput = {
   id?: Prisma.StringFilter<"Service"> | string
   customerId?: Prisma.StringFilter<"Service"> | string
   serviceType?: Prisma.StringFilter<"Service"> | string
-  installationDate?: Prisma.DateTimeFilter<"Service"> | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFilter<"Service"> | Date | string
+  serviceCompleteDate?: Prisma.DateTimeNullableFilter<"Service"> | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFilter<"Service"> | Date | string
 }
 
 export type ServiceCreateWithoutAmcContractsInput = {
   id?: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutServicesInput
   complaints?: Prisma.ComplaintCreateNestedManyWithoutServiceInput
@@ -474,7 +500,8 @@ export type ServiceUncheckedCreateWithoutAmcContractsInput = {
   id?: string
   customerId: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
   complaints?: Prisma.ComplaintUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -498,7 +525,8 @@ export type ServiceUpdateToOneWithWhereWithoutAmcContractsInput = {
 export type ServiceUpdateWithoutAmcContractsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutServicesNestedInput
   complaints?: Prisma.ComplaintUpdateManyWithoutServiceNestedInput
@@ -508,7 +536,8 @@ export type ServiceUncheckedUpdateWithoutAmcContractsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   complaints?: Prisma.ComplaintUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -516,7 +545,8 @@ export type ServiceUncheckedUpdateWithoutAmcContractsInput = {
 export type ServiceCreateWithoutComplaintsInput = {
   id?: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutServicesInput
   amcContracts?: Prisma.AMCContractCreateNestedManyWithoutServiceInput
@@ -526,7 +556,8 @@ export type ServiceUncheckedCreateWithoutComplaintsInput = {
   id?: string
   customerId: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
   amcContracts?: Prisma.AMCContractUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -550,7 +581,8 @@ export type ServiceUpdateToOneWithWhereWithoutComplaintsInput = {
 export type ServiceUpdateWithoutComplaintsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutServicesNestedInput
   amcContracts?: Prisma.AMCContractUpdateManyWithoutServiceNestedInput
@@ -560,7 +592,8 @@ export type ServiceUncheckedUpdateWithoutComplaintsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amcContracts?: Prisma.AMCContractUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -568,14 +601,16 @@ export type ServiceUncheckedUpdateWithoutComplaintsInput = {
 export type ServiceCreateManyCustomerInput = {
   id?: string
   serviceType: string
-  installationDate: Date | string
+  serviceRegisterDate?: Date | string
+  serviceCompleteDate?: Date | string | null
   nextServiceDueDate?: Date | string
 }
 
 export type ServiceUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   complaints?: Prisma.ComplaintUpdateManyWithoutServiceNestedInput
   amcContracts?: Prisma.AMCContractUpdateManyWithoutServiceNestedInput
@@ -584,7 +619,8 @@ export type ServiceUpdateWithoutCustomerInput = {
 export type ServiceUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   complaints?: Prisma.ComplaintUncheckedUpdateManyWithoutServiceNestedInput
   amcContracts?: Prisma.AMCContractUncheckedUpdateManyWithoutServiceNestedInput
@@ -593,7 +629,8 @@ export type ServiceUncheckedUpdateWithoutCustomerInput = {
 export type ServiceUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  installationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceRegisterDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceCompleteDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nextServiceDueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -641,7 +678,8 @@ export type ServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   customerId?: boolean
   serviceType?: boolean
-  installationDate?: boolean
+  serviceRegisterDate?: boolean
+  serviceCompleteDate?: boolean
   nextServiceDueDate?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   complaints?: boolean | Prisma.Service$complaintsArgs<ExtArgs>
@@ -653,7 +691,8 @@ export type ServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   customerId?: boolean
   serviceType?: boolean
-  installationDate?: boolean
+  serviceRegisterDate?: boolean
+  serviceCompleteDate?: boolean
   nextServiceDueDate?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["service"]>
@@ -662,7 +701,8 @@ export type ServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   customerId?: boolean
   serviceType?: boolean
-  installationDate?: boolean
+  serviceRegisterDate?: boolean
+  serviceCompleteDate?: boolean
   nextServiceDueDate?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["service"]>
@@ -671,11 +711,12 @@ export type ServiceSelectScalar = {
   id?: boolean
   customerId?: boolean
   serviceType?: boolean
-  installationDate?: boolean
+  serviceRegisterDate?: boolean
+  serviceCompleteDate?: boolean
   nextServiceDueDate?: boolean
 }
 
-export type ServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "serviceType" | "installationDate" | "nextServiceDueDate", ExtArgs["result"]["service"]>
+export type ServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "serviceType" | "serviceRegisterDate" | "serviceCompleteDate" | "nextServiceDueDate", ExtArgs["result"]["service"]>
 export type ServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   complaints?: boolean | Prisma.Service$complaintsArgs<ExtArgs>
@@ -700,7 +741,8 @@ export type $ServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: string
     customerId: string
     serviceType: string
-    installationDate: Date
+    serviceRegisterDate: Date
+    serviceCompleteDate: Date | null
     nextServiceDueDate: Date
   }, ExtArgs["result"]["service"]>
   composites: {}
@@ -1131,7 +1173,8 @@ export interface ServiceFieldRefs {
   readonly id: Prisma.FieldRef<"Service", 'String'>
   readonly customerId: Prisma.FieldRef<"Service", 'String'>
   readonly serviceType: Prisma.FieldRef<"Service", 'String'>
-  readonly installationDate: Prisma.FieldRef<"Service", 'DateTime'>
+  readonly serviceRegisterDate: Prisma.FieldRef<"Service", 'DateTime'>
+  readonly serviceCompleteDate: Prisma.FieldRef<"Service", 'DateTime'>
   readonly nextServiceDueDate: Prisma.FieldRef<"Service", 'DateTime'>
 }
     

@@ -35,7 +35,7 @@ type CustomerDetail = {
   services: {
     id: string;
     serviceType: string;
-    installationDate: Date | string;
+    serviceRegisterDate: Date | string;
     amcContracts: {
       id: string;
       startDate: Date | string;

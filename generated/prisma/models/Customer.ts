@@ -30,6 +30,9 @@ export type CustomerMinAggregateOutputType = {
   address: string | null
   phone: string | null
   email: string | null
+  installationDate: Date | null
+  warrantyPeriod: string | null
+  plantModelName: string | null
   createdAt: Date | null
 }
 
@@ -39,6 +42,9 @@ export type CustomerMaxAggregateOutputType = {
   address: string | null
   phone: string | null
   email: string | null
+  installationDate: Date | null
+  warrantyPeriod: string | null
+  plantModelName: string | null
   createdAt: Date | null
 }
 
@@ -48,6 +54,9 @@ export type CustomerCountAggregateOutputType = {
   address: number
   phone: number
   email: number
+  installationDate: number
+  warrantyPeriod: number
+  plantModelName: number
   createdAt: number
   _all: number
 }
@@ -59,6 +68,9 @@ export type CustomerMinAggregateInputType = {
   address?: true
   phone?: true
   email?: true
+  installationDate?: true
+  warrantyPeriod?: true
+  plantModelName?: true
   createdAt?: true
 }
 
@@ -68,6 +80,9 @@ export type CustomerMaxAggregateInputType = {
   address?: true
   phone?: true
   email?: true
+  installationDate?: true
+  warrantyPeriod?: true
+  plantModelName?: true
   createdAt?: true
 }
 
@@ -77,6 +92,9 @@ export type CustomerCountAggregateInputType = {
   address?: true
   phone?: true
   email?: true
+  installationDate?: true
+  warrantyPeriod?: true
+  plantModelName?: true
   createdAt?: true
   _all?: true
 }
@@ -159,6 +177,9 @@ export type CustomerGroupByOutputType = {
   address: string
   phone: string
   email: string | null
+  installationDate: Date | null
+  warrantyPeriod: string | null
+  plantModelName: string | null
   createdAt: Date
   _count: CustomerCountAggregateOutputType | null
   _min: CustomerMinAggregateOutputType | null
@@ -189,6 +210,9 @@ export type CustomerWhereInput = {
   address?: Prisma.StringFilter<"Customer"> | string
   phone?: Prisma.StringFilter<"Customer"> | string
   email?: Prisma.StringNullableFilter<"Customer"> | string | null
+  installationDate?: Prisma.DateTimeNullableFilter<"Customer"> | Date | string | null
+  warrantyPeriod?: Prisma.StringNullableFilter<"Customer"> | string | null
+  plantModelName?: Prisma.StringNullableFilter<"Customer"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   services?: Prisma.ServiceListRelationFilter
   amcs?: Prisma.AMCContractListRelationFilter
@@ -202,6 +226,9 @@ export type CustomerOrderByWithRelationInput = {
   address?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
+  installationDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  warrantyPeriod?: Prisma.SortOrderInput | Prisma.SortOrder
+  plantModelName?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   services?: Prisma.ServiceOrderByRelationAggregateInput
   amcs?: Prisma.AMCContractOrderByRelationAggregateInput
@@ -218,6 +245,9 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   address?: Prisma.StringFilter<"Customer"> | string
   phone?: Prisma.StringFilter<"Customer"> | string
   email?: Prisma.StringNullableFilter<"Customer"> | string | null
+  installationDate?: Prisma.DateTimeNullableFilter<"Customer"> | Date | string | null
+  warrantyPeriod?: Prisma.StringNullableFilter<"Customer"> | string | null
+  plantModelName?: Prisma.StringNullableFilter<"Customer"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   services?: Prisma.ServiceListRelationFilter
   amcs?: Prisma.AMCContractListRelationFilter
@@ -231,6 +261,9 @@ export type CustomerOrderByWithAggregationInput = {
   address?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
+  installationDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  warrantyPeriod?: Prisma.SortOrderInput | Prisma.SortOrder
+  plantModelName?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CustomerCountOrderByAggregateInput
   _max?: Prisma.CustomerMaxOrderByAggregateInput
@@ -246,6 +279,9 @@ export type CustomerScalarWhereWithAggregatesInput = {
   address?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   phone?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
+  installationDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+  warrantyPeriod?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
+  plantModelName?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
 }
 
@@ -255,6 +291,9 @@ export type CustomerCreateInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   services?: Prisma.ServiceCreateNestedManyWithoutCustomerInput
   amcs?: Prisma.AMCContractCreateNestedManyWithoutCustomerInput
@@ -268,6 +307,9 @@ export type CustomerUncheckedCreateInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutCustomerInput
   amcs?: Prisma.AMCContractUncheckedCreateNestedManyWithoutCustomerInput
@@ -281,6 +323,9 @@ export type CustomerUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUpdateManyWithoutCustomerNestedInput
   amcs?: Prisma.AMCContractUpdateManyWithoutCustomerNestedInput
@@ -294,6 +339,9 @@ export type CustomerUncheckedUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUncheckedUpdateManyWithoutCustomerNestedInput
   amcs?: Prisma.AMCContractUncheckedUpdateManyWithoutCustomerNestedInput
@@ -307,6 +355,9 @@ export type CustomerCreateManyInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
 }
 
@@ -316,6 +367,9 @@ export type CustomerUpdateManyMutationInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -325,6 +379,9 @@ export type CustomerUncheckedUpdateManyInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -334,6 +391,9 @@ export type CustomerCountOrderByAggregateInput = {
   address?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  installationDate?: Prisma.SortOrder
+  warrantyPeriod?: Prisma.SortOrder
+  plantModelName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -343,6 +403,9 @@ export type CustomerMaxOrderByAggregateInput = {
   address?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  installationDate?: Prisma.SortOrder
+  warrantyPeriod?: Prisma.SortOrder
+  plantModelName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -352,6 +415,9 @@ export type CustomerMinOrderByAggregateInput = {
   address?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  installationDate?: Prisma.SortOrder
+  warrantyPeriod?: Prisma.SortOrder
+  plantModelName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -422,6 +488,9 @@ export type CustomerCreateWithoutServicesInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   amcs?: Prisma.AMCContractCreateNestedManyWithoutCustomerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
@@ -434,6 +503,9 @@ export type CustomerUncheckedCreateWithoutServicesInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   amcs?: Prisma.AMCContractUncheckedCreateNestedManyWithoutCustomerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
@@ -462,6 +534,9 @@ export type CustomerUpdateWithoutServicesInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amcs?: Prisma.AMCContractUpdateManyWithoutCustomerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
@@ -474,6 +549,9 @@ export type CustomerUncheckedUpdateWithoutServicesInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amcs?: Prisma.AMCContractUncheckedUpdateManyWithoutCustomerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
@@ -486,6 +564,9 @@ export type CustomerCreateWithoutAmcsInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   services?: Prisma.ServiceCreateNestedManyWithoutCustomerInput
   payments?: Prisma.PaymentCreateNestedManyWithoutCustomerInput
@@ -498,6 +579,9 @@ export type CustomerUncheckedCreateWithoutAmcsInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutCustomerInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCustomerInput
@@ -526,6 +610,9 @@ export type CustomerUpdateWithoutAmcsInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUpdateManyWithoutCustomerNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutCustomerNestedInput
@@ -538,6 +625,9 @@ export type CustomerUncheckedUpdateWithoutAmcsInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUncheckedUpdateManyWithoutCustomerNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutCustomerNestedInput
@@ -550,6 +640,9 @@ export type CustomerCreateWithoutPaymentsInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   services?: Prisma.ServiceCreateNestedManyWithoutCustomerInput
   amcs?: Prisma.AMCContractCreateNestedManyWithoutCustomerInput
@@ -562,6 +655,9 @@ export type CustomerUncheckedCreateWithoutPaymentsInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutCustomerInput
   amcs?: Prisma.AMCContractUncheckedCreateNestedManyWithoutCustomerInput
@@ -590,6 +686,9 @@ export type CustomerUpdateWithoutPaymentsInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUpdateManyWithoutCustomerNestedInput
   amcs?: Prisma.AMCContractUpdateManyWithoutCustomerNestedInput
@@ -602,6 +701,9 @@ export type CustomerUncheckedUpdateWithoutPaymentsInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUncheckedUpdateManyWithoutCustomerNestedInput
   amcs?: Prisma.AMCContractUncheckedUpdateManyWithoutCustomerNestedInput
@@ -614,6 +716,9 @@ export type CustomerCreateWithoutComplaintsInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   services?: Prisma.ServiceCreateNestedManyWithoutCustomerInput
   amcs?: Prisma.AMCContractCreateNestedManyWithoutCustomerInput
@@ -626,6 +731,9 @@ export type CustomerUncheckedCreateWithoutComplaintsInput = {
   address: string
   phone: string
   email?: string | null
+  installationDate?: Date | string | null
+  warrantyPeriod?: string | null
+  plantModelName?: string | null
   createdAt?: Date | string
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutCustomerInput
   amcs?: Prisma.AMCContractUncheckedCreateNestedManyWithoutCustomerInput
@@ -654,6 +762,9 @@ export type CustomerUpdateWithoutComplaintsInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUpdateManyWithoutCustomerNestedInput
   amcs?: Prisma.AMCContractUpdateManyWithoutCustomerNestedInput
@@ -666,6 +777,9 @@ export type CustomerUncheckedUpdateWithoutComplaintsInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  warrantyPeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plantModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUncheckedUpdateManyWithoutCustomerNestedInput
   amcs?: Prisma.AMCContractUncheckedUpdateManyWithoutCustomerNestedInput
@@ -736,6 +850,9 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   address?: boolean
   phone?: boolean
   email?: boolean
+  installationDate?: boolean
+  warrantyPeriod?: boolean
+  plantModelName?: boolean
   createdAt?: boolean
   services?: boolean | Prisma.Customer$servicesArgs<ExtArgs>
   amcs?: boolean | Prisma.Customer$amcsArgs<ExtArgs>
@@ -750,6 +867,9 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   address?: boolean
   phone?: boolean
   email?: boolean
+  installationDate?: boolean
+  warrantyPeriod?: boolean
+  plantModelName?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["customer"]>
 
@@ -759,6 +879,9 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   address?: boolean
   phone?: boolean
   email?: boolean
+  installationDate?: boolean
+  warrantyPeriod?: boolean
+  plantModelName?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["customer"]>
 
@@ -768,10 +891,13 @@ export type CustomerSelectScalar = {
   address?: boolean
   phone?: boolean
   email?: boolean
+  installationDate?: boolean
+  warrantyPeriod?: boolean
+  plantModelName?: boolean
   createdAt?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "address" | "phone" | "email" | "createdAt", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "address" | "phone" | "email" | "installationDate" | "warrantyPeriod" | "plantModelName" | "createdAt", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   services?: boolean | Prisma.Customer$servicesArgs<ExtArgs>
   amcs?: boolean | Prisma.Customer$amcsArgs<ExtArgs>
@@ -796,6 +922,9 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     address: string
     phone: string
     email: string | null
+    installationDate: Date | null
+    warrantyPeriod: string | null
+    plantModelName: string | null
     createdAt: Date
   }, ExtArgs["result"]["customer"]>
   composites: {}
@@ -1229,6 +1358,9 @@ export interface CustomerFieldRefs {
   readonly address: Prisma.FieldRef<"Customer", 'String'>
   readonly phone: Prisma.FieldRef<"Customer", 'String'>
   readonly email: Prisma.FieldRef<"Customer", 'String'>
+  readonly installationDate: Prisma.FieldRef<"Customer", 'DateTime'>
+  readonly warrantyPeriod: Prisma.FieldRef<"Customer", 'String'>
+  readonly plantModelName: Prisma.FieldRef<"Customer", 'String'>
   readonly createdAt: Prisma.FieldRef<"Customer", 'DateTime'>
 }
     

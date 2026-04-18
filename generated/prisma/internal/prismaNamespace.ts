@@ -1333,6 +1333,9 @@ export const CustomerScalarFieldEnum = {
   address: 'address',
   phone: 'phone',
   email: 'email',
+  installationDate: 'installationDate',
+  warrantyPeriod: 'warrantyPeriod',
+  plantModelName: 'plantModelName',
   createdAt: 'createdAt'
 } as const
 
@@ -1343,7 +1346,8 @@ export const ServiceScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   serviceType: 'serviceType',
-  installationDate: 'installationDate',
+  serviceRegisterDate: 'serviceRegisterDate',
+  serviceCompleteDate: 'serviceCompleteDate',
   nextServiceDueDate: 'nextServiceDueDate'
 } as const
 

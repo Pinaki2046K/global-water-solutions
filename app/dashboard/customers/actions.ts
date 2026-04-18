@@ -10,6 +10,9 @@ const createCustomerSchema = z.object({
   address: z.string().min(5, "Address must be at least 5 characters"),
   phone: z.string().min(10, "Phone number must be valid"),
   email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  installationDate: z.string().optional(),
+  warrantyPeriod: z.string().optional(),
+  plantModelName: z.string().optional(),
 });
 
 export async function createCustomer(formData: FormData) {
@@ -18,6 +21,9 @@ export async function createCustomer(formData: FormData) {
     address: formData.get("address"),
     phone: formData.get("phone"),
     email: formData.get("email"),
+    installationDate: formData.get("installationDate"),
+    warrantyPeriod: formData.get("warrantyPeriod"),
+    plantModelName: formData.get("plantModelName"),
   };
 
   const validatedData = createCustomerSchema.safeParse(rawData);
@@ -35,6 +41,11 @@ export async function createCustomer(formData: FormData) {
         address: validatedData.data.address,
         phone: validatedData.data.phone,
         email: validatedData.data.email || null,
+        installationDate: validatedData.data.installationDate
+          ? new Date(validatedData.data.installationDate)
+          : null,
+        warrantyPeriod: validatedData.data.warrantyPeriod || null,
+        plantModelName: validatedData.data.plantModelName || null,
       },
     });
   } catch (e) {
@@ -64,6 +75,7 @@ export async function getCustomers(query?: string, sort?: string) {
             { name: { contains: query, mode: "insensitive" } },
             { phone: { contains: query, mode: "insensitive" } },
             { email: { contains: query, mode: "insensitive" } },
+            { address: { contains: query, mode: "insensitive" } },
           ],
         }
       : undefined,

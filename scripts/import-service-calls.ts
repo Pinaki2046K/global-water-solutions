@@ -101,7 +101,7 @@ async function main() {
         data: {
           customerId: customer.id,
           serviceType: "General System (Legacy)",
-          installationDate: complaintDate || new Date(),
+          serviceRegisterDate: complaintDate || new Date(),
         },
       });
     }

@@ -135,7 +135,7 @@ export default async function PaymentsPage({
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -227,11 +227,19 @@ export default async function PaymentsPage({
             <tbody className="divide-y divide-gray-100">
               {payments.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-6 py-8 text-center text-gray-500"
-                  >
-                    No transactions found
+                  <td colSpan={7} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="rounded-full bg-gray-50 p-4 border border-gray-100">
+                        <Filter className="h-6 w-6 text-gray-400" />
+                      </div>
+                      <p className="text-sm font-medium text-gray-900">
+                        No transactions found
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        There are no payment records matching your current
+                        filters.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (

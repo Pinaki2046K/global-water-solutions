@@ -28,18 +28,17 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, x: -15, filter: "blur(4px)" },
-  show: { 
-    opacity: 1, 
-    x: 0, 
+  show: {
+    opacity: 1,
+    x: 0,
     filter: "blur(0px)",
-    transition: { type: "spring" as const, stiffness: 350, damping: 25 }
+    transition: { type: "spring" as const, stiffness: 350, damping: 25 },
   },
 } as const;
 
 export function RecentActivity({ activities }: RecentActivityProps) {
   return (
     <div className="relative overflow-hidden rounded-[2.5rem] border border-white/60 bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_16px_40px_rgb(46,52,88,0.08)] h-full flex flex-col group/widget">
-      
       {/* ── Refined Brand Ambient Glow ── */}
       <div className="absolute -top-32 -right-32 h-72 w-72 rounded-full bg-indigo-400/15 blur-[64px] pointer-events-none transition-transform duration-1000 group-hover/widget:scale-110" />
       <div className="absolute -bottom-32 -left-32 h-72 w-72 rounded-full bg-blue-400/10 blur-[64px] pointer-events-none transition-transform duration-1000 group-hover/widget:scale-110" />
@@ -54,7 +53,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
             Latest transactions & updates
           </p>
         </div>
-        
+
         {/* Subtle Pill Header Button */}
         <button className="group flex items-center gap-1.5 rounded-full bg-white/60 backdrop-blur-md px-4 py-2 text-xs font-bold text-slate-600 shadow-sm border border-slate-200/50 transition-all duration-300 hover:bg-white hover:text-[#2e3458] hover:shadow-md hover:border-indigo-100 active:scale-95">
           <span>View All</span>
@@ -63,7 +62,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
       </div>
 
       {/* ── Activity List with Fade Mask ── */}
-      <motion.div 
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="show"
@@ -92,7 +91,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                   <Clock className="h-5 w-5" />
                 )}
               </div>
-              
+
               <div className="overflow-hidden">
                 <p className="text-sm font-extrabold text-slate-800 truncate transition-transform duration-300 group-hover:translate-x-1">
                   {activity.type}
@@ -108,12 +107,14 @@ export function RecentActivity({ activities }: RecentActivityProps) {
 
             <div className="text-right shrink-0 flex flex-col items-end">
               {/* Amount - Lights up slightly on hover */}
-              <p className={cn(
-                "text-base font-black tracking-tight transition-all duration-300 group-hover:-translate-x-1",
-                activity.status === "PAID" 
-                  ? "text-emerald-600 group-hover:drop-shadow-[0_2px_8px_rgba(16,185,129,0.3)]" 
-                  : "text-amber-600 group-hover:drop-shadow-[0_2px_8px_rgba(245,158,11,0.3)]"
-              )}>
+              <p
+                className={cn(
+                  "text-base font-black tracking-tight transition-all duration-300 group-hover:-translate-x-1",
+                  activity.status === "PAID"
+                    ? "text-emerald-600 group-hover:drop-shadow-[0_2px_8px_rgba(16,185,129,0.3)]"
+                    : "text-amber-600 group-hover:drop-shadow-[0_2px_8px_rgba(245,158,11,0.3)]",
+                )}
+              >
                 +
                 {new Intl.NumberFormat("en-IN", {
                   style: "currency",
@@ -122,7 +123,13 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                 }).format(activity.amount)}
               </p>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5 transition-transform duration-300 group-hover:-translate-x-1">
-                Just now
+                {new Date(activity.date).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </div>
           </motion.div>
@@ -130,7 +137,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
 
         {/* Empty State */}
         {activities.length === 0 && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             className="flex flex-col items-center justify-center h-full text-center py-12"
@@ -138,8 +145,12 @@ export function RecentActivity({ activities }: RecentActivityProps) {
             <div className="h-16 w-16 rounded-3xl bg-white/60 border border-slate-100 shadow-inner flex items-center justify-center mb-4 transition-transform hover:scale-105">
               <IndianRupee className="h-8 w-8 text-slate-300" />
             </div>
-            <p className="text-sm font-bold text-slate-700">No recent activity</p>
-            <p className="text-xs font-medium text-slate-500 mt-1 max-w-[200px]">Transactions and updates will appear here.</p>
+            <p className="text-sm font-bold text-slate-700">
+              No recent activity
+            </p>
+            <p className="text-xs font-medium text-slate-500 mt-1 max-w-[200px]">
+              Transactions and updates will appear here.
+            </p>
           </motion.div>
         )}
       </motion.div>

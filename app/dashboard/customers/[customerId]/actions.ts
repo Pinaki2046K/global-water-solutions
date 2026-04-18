@@ -16,7 +16,7 @@ export async function getCustomerDetails(customerId: string) {
             where: { status: { not: "RESOLVED" } }, // Open complaints count/preview
           },
         },
-        orderBy: { installationDate: "desc" },
+        orderBy: { serviceRegisterDate: "desc" },
       },
       payments: {
         orderBy: { createdAt: "desc" },
@@ -64,7 +64,7 @@ export async function addService(customerId: string, formData: FormData) {
     data: {
       customerId,
       serviceType: validated.data.serviceType,
-      installationDate: validated.data.installationDate,
+      serviceRegisterDate: validated.data.installationDate,
       nextServiceDueDate: nextDueDate, // Explictly set based on installation date
     },
   });

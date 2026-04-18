@@ -14,15 +14,24 @@ import { MetricCard } from "@/components/dashboard/metric-card";
 import Link from "next/link";
 
 export default async function DashboardPage() {
-  // Check for services due maintenance and create notifications
-  await checkAndCreateServiceNotifications();
-  // Check for expiring contracts and create notifications
-  await checkAndCreateContractExpiryNotifications();
+  // Execute all dashboard queries and notification background checks concurrently
+  const [stats, revenueData6M, revenueData1Y, revenueDataAll, recentActivity] =
+    await Promise.all([
+      getDashboardStats(),
+      getMonthlyRevenue("6M"),
+      getMonthlyRevenue("1Y"),
+      getMonthlyRevenue("ALL"),
+      getRecentActivity(),
+      // These run simultaneously but we don't need their return values here
+      checkAndCreateServiceNotifications(),
+      checkAndCreateContractExpiryNotifications(),
+    ]);
 
-  const stats = await getDashboardStats();
-
-  const revenueData = await getMonthlyRevenue();
-  const recentActivity = await getRecentActivity();
+  const revenueData = {
+    "6M": revenueData6M,
+    "1Y": revenueData1Y,
+    ALL: revenueDataAll,
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -54,7 +63,6 @@ export default async function DashboardPage() {
           icon={Users}
           color="indigo"
           description="Active customer base"
-          trend={{ value: 8, isPositive: true }}
         />
 
         <MetricCard
@@ -63,7 +71,6 @@ export default async function DashboardPage() {
           icon={FileText}
           color="green"
           description="Contracts currently active"
-          trend={{ value: 12, isPositive: true }}
         />
 
         <MetricCard
@@ -72,7 +79,6 @@ export default async function DashboardPage() {
           icon={IndianRupee}
           color="rose"
           description={`${stats.pendingAMCsCount} contracts pending`}
-          trend={{ value: 2, isPositive: false }}
         />
 
         <MetricCard

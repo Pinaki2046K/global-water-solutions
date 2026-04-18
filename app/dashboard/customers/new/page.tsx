@@ -158,6 +158,71 @@ export default function NewCustomerPage() {
                 </p>
               )}
             </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="installationDate"
+                className="text-sm font-semibold text-gray-700"
+              >
+                Installation Date
+              </label>
+              <input
+                id="installationDate"
+                name="installationDate"
+                type="date"
+                className="block w-full rounded-xl border-gray-200 bg-gray-50/50 py-3 px-4 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+              />
+              {state?.error?.installationDate && (
+                <p className="text-sm text-red-500 flex items-center mt-1">
+                  <span className="w-1 h-1 rounded-full bg-red-500 mr-2"></span>
+                  {state.error.installationDate[0]}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="warrantyPeriod"
+                className="text-sm font-semibold text-gray-700"
+              >
+                Warranty Period
+              </label>
+              <input
+                id="warrantyPeriod"
+                name="warrantyPeriod"
+                type="text"
+                placeholder="Ex. 1 Year, 6 Months"
+                className="block w-full rounded-xl border-gray-200 bg-gray-50/50 py-3 px-4 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+              />
+              {state?.error?.warrantyPeriod && (
+                <p className="text-sm text-red-500 flex items-center mt-1">
+                  <span className="w-1 h-1 rounded-full bg-red-500 mr-2"></span>
+                  {state.error.warrantyPeriod[0]}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2 col-span-2 md:col-span-1">
+              <label
+                htmlFor="plantModelName"
+                className="text-sm font-semibold text-gray-700"
+              >
+                Plant Model Name
+              </label>
+              <input
+                id="plantModelName"
+                name="plantModelName"
+                type="text"
+                placeholder="Ex. AquaGuard Pro"
+                className="block w-full rounded-xl border-gray-200 bg-gray-50/50 py-3 px-4 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+              />
+              {state?.error?.plantModelName && (
+                <p className="text-sm text-red-500 flex items-center mt-1">
+                  <span className="w-1 h-1 rounded-full bg-red-500 mr-2"></span>
+                  {state.error.plantModelName[0]}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end pt-6 border-t border-gray-100/50">

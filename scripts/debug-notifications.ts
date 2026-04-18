@@ -53,7 +53,7 @@ async function main() {
   duServices.forEach((s) => {
     console.log(`  - Customer: ${s.customer.name}`);
     console.log(`    Service Type: ${s.serviceType}`);
-    console.log(`    Installation: ${s.installationDate.toDateString()}`);
+    console.log(`    Installation: ${s.serviceRegisterDate.toDateString()}`);
     console.log(`    Next Due: ${s.nextServiceDueDate.toDateString()}`);
     console.log();
   });

@@ -18,11 +18,14 @@ export async function getDashboardStats() {
     }),
   ]);
 
-  // Calculate pending amount dynamically
-  // Fetch all contracts with their payments to calculate real pending dues
+  // Calculate pending amount dynamically with minimal payload
   const allAMCs = await prisma.aMCContract.findMany({
-    include: {
-      payments: true,
+    select: {
+      amount: true,
+      payments: {
+        where: { status: "PAID" },
+        select: { amount: true },
+      },
     },
   });
 
@@ -30,9 +33,7 @@ export async function getDashboardStats() {
   let pendingAMCsCount = 0;
 
   for (const amc of allAMCs) {
-    const paidAmount = amc.payments
-      .filter((p) => p.status === "PAID")
-      .reduce((sum, p) => sum + p.amount, 0);
+    const paidAmount = amc.payments.reduce((sum, p) => sum + p.amount, 0);
 
     const due = amc.amount - paidAmount;
 
@@ -93,19 +94,31 @@ export async function getRecentComplaints() {
   });
 }
 
-export async function getMonthlyRevenue() {
-  // Fetch last 6 months payments
-  const sixMonthsAgo = new Date();
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-  sixMonthsAgo.setHours(0, 0, 0, 0);
+export async function getMonthlyRevenue(period: "6M" | "1Y" | "ALL" = "6M") {
+  const startDate = new Date();
+  startDate.setDate(1); // Start at the beginning of the current month
+  startDate.setHours(0, 0, 0, 0);
 
-  // Fetch payments directly instead of FinanceLog to ensure data shows up from Payment records
+  let numMonths = 6;
+  if (period === "1Y") numMonths = 12;
+  if (period === "ALL") numMonths = 12; // Cap 'ALL' to 12 months for now to avoid squishing the chart too much, but with different logic if needed. Let's do 24.
+  if (period === "ALL") numMonths = 60; // 5 years
+
+  // Go back numMonths
+  startDate.setMonth(startDate.getMonth() - numMonths + 1);
+
+  // Fetch payments strictly for essential fields instead of full records
   const payments = await prisma.payment.findMany({
     where: {
       status: "PAID",
       createdAt: {
-        gte: sixMonthsAgo,
+        gte: startDate,
       },
+    },
+    select: {
+      amount: true,
+      createdAt: true,
+      paymentDate: true,
     },
     orderBy: {
       createdAt: "asc",
@@ -129,11 +142,18 @@ export async function getMonthlyRevenue() {
     "Dec",
   ];
 
-  // Initialize last 6 months
-  for (let i = 5; i >= 0; i--) {
+  // Initialize last numMonths
+  for (let i = numMonths - 1; i >= 0; i--) {
     const d = new Date();
     d.setMonth(d.getMonth() - i);
-    const key = months[d.getMonth()];
+    let key = months[d.getMonth()];
+    if (
+      period === "ALL" ||
+      period === "1Y" ||
+      (period === "6M" && d.getFullYear() !== new Date().getFullYear())
+    ) {
+      key = `${key} '${d.getFullYear().toString().slice(2)}`;
+    }
     monthlyData[key] = { revenue: 0 };
   }
 
@@ -142,7 +162,14 @@ export async function getMonthlyRevenue() {
     const d = payment.paymentDate
       ? new Date(payment.paymentDate)
       : new Date(payment.createdAt);
-    const key = months[d.getMonth()];
+    let key = months[d.getMonth()];
+    if (
+      period === "ALL" ||
+      period === "1Y" ||
+      (period === "6M" && d.getFullYear() !== new Date().getFullYear())
+    ) {
+      key = `${key} '${d.getFullYear().toString().slice(2)}`;
+    }
     // Simply sum up the successful payment amounts
     if (monthlyData[key]) {
       monthlyData[key].revenue += payment.amount;
@@ -161,8 +188,14 @@ export async function getRecentActivity() {
     orderBy: {
       createdAt: "desc",
     },
-    include: {
-      customer: true,
+    select: {
+      id: true,
+      amount: true,
+      status: true,
+      createdAt: true,
+      customer: {
+        select: { name: true },
+      },
     },
   });
 

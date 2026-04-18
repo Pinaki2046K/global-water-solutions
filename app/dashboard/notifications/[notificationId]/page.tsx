@@ -135,9 +135,11 @@ export default async function NotificationDetailPage({
                 <div className="flex items-start space-x-3">
                   <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
                   <div>
-                    <p className="text-xs text-gray-500">Installation Date</p>
+                    <p className="text-xs text-gray-500">
+                      Service Register Date
+                    </p>
                     <p className="text-sm font-medium text-gray-900">
-                      {format(new Date(service.installationDate), "PPP")}
+                      {format(new Date(service.serviceRegisterDate), "PPP")}
                     </p>
                   </div>
                 </div>

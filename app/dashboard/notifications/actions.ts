@@ -72,7 +72,7 @@ export async function checkAndCreateServiceNotifications() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Find all services where nextServiceDueDate is today or in the past
+  // Re-fetch all services where nextServiceDueDate is today or in the past
   const servicesDue = await prisma.service.findMany({
     where: {
       nextServiceDueDate: {
@@ -99,39 +99,42 @@ export async function checkAndCreateServiceNotifications() {
 
   console.log(`👥 Found ${adminUsers.length} admin users`);
 
-  let createdCount = 0;
+  // Fetch all existing unread service notifications to avoid N+1 queries
+  const existingNotifications = await prisma.notification.findMany({
+    where: {
+      title: "SERVICE DUE FOR MAINTENANCE",
+      isRead: false,
+    },
+    select: { userId: true, message: true },
+  });
+
+  const newNotificationsData = [];
 
   for (const service of servicesDue) {
     for (const admin of adminUsers) {
-      // Check if notification already exists for this specific service
-      // Use service ID to ensure each service gets its own notification
-      const existingNotification = await prisma.notification.findFirst({
-        where: {
+      const alreadyNotified = existingNotifications.some(
+        (n) => n.userId === admin.id && n.message.includes(service.id),
+      );
+
+      if (!alreadyNotified) {
+        newNotificationsData.push({
           userId: admin.id,
           title: "SERVICE DUE FOR MAINTENANCE",
-          message: {
-            contains: service.id, // Check for specific service ID
-          },
+          message: `Service for customer "${service.customer.name}" (${service.serviceType}) is due for maintenance. [Service ID: ${service.id}]`,
+          type: "WARNING",
           isRead: false,
-        },
-      });
-
-      if (!existingNotification) {
-        await prisma.notification.create({
-          data: {
-            userId: admin.id,
-            title: "SERVICE DUE FOR MAINTENANCE",
-            message: `Service for customer "${service.customer.name}" (${service.serviceType}) is due for maintenance. [Service ID: ${service.id}]`,
-            type: "WARNING",
-            isRead: false,
-          },
         });
-        createdCount++;
       }
     }
   }
 
-  console.log(`✅ Created ${createdCount} new notifications`);
+  if (newNotificationsData.length > 0) {
+    await prisma.notification.createMany({
+      data: newNotificationsData,
+    });
+  }
+
+  console.log(`✅ Created ${newNotificationsData.length} new notifications`);
 
   return {
     count: servicesDue.length,
@@ -187,38 +190,44 @@ export async function checkAndCreateContractExpiryNotifications() {
 
   console.log(`👥 Found ${adminUsers.length} admin users`);
 
-  let createdCount = 0;
+  // Fetch all existing unread AMC notifications to avoid N+1 queries
+  const existingNotifications = await prisma.notification.findMany({
+    where: {
+      title: "AMC CONTRACT EXPIRING SOON",
+      isRead: false,
+    },
+    select: { userId: true, message: true },
+  });
+
+  const newNotificationsData = [];
 
   for (const contract of contractsExpiring) {
     for (const admin of adminUsers) {
-      // Check if notification already exists for this specific contract
-      const existingNotification = await prisma.notification.findFirst({
-        where: {
+      const alreadyNotified = existingNotifications.some(
+        (n) => n.userId === admin.id && n.message.includes(contract.id),
+      );
+
+      if (!alreadyNotified) {
+        newNotificationsData.push({
           userId: admin.id,
           title: "AMC CONTRACT EXPIRING SOON",
-          message: {
-            contains: contract.id, // Check for specific contract ID
-          },
+          message: `AMC Contract for customer "${contract.customer.name}" (${contract.service.serviceType}) is expiring on ${contract.endDate.toLocaleDateString()}. [Contract ID: ${contract.id}]`,
+          type: "WARNING",
           isRead: false,
-        },
-      });
-
-      if (!existingNotification) {
-        await prisma.notification.create({
-          data: {
-            userId: admin.id,
-            title: "AMC CONTRACT EXPIRING SOON",
-            message: `AMC Contract for customer "${contract.customer.name}" (${contract.service.serviceType}) is expiring on ${contract.endDate.toLocaleDateString()}. [Contract ID: ${contract.id}]`,
-            type: "WARNING",
-            isRead: false,
-          },
         });
-        createdCount++;
       }
     }
   }
 
-  console.log(`✅ Created ${createdCount} new contract expiry notifications`);
+  if (newNotificationsData.length > 0) {
+    await prisma.notification.createMany({
+      data: newNotificationsData,
+    });
+  }
+
+  console.log(
+    `✅ Created ${newNotificationsData.length} new contract expiry notifications`,
+  );
 
   return {
     count: contractsExpiring.length,
@@ -274,7 +283,8 @@ export async function getNotificationWithServiceDetails(
       service: {
         id: service.id,
         serviceType: service.serviceType,
-        installationDate: service.installationDate,
+        serviceRegisterDate: service.serviceRegisterDate,
+        installationDate: service.customer.installationDate,
         nextServiceDueDate: service.nextServiceDueDate,
         customer: service.customer,
         amcContracts: service.amcContracts,
@@ -329,15 +339,23 @@ export async function markServiceAsServiced(serviceId: string) {
   // Get the service to calculate which service cycle this is
   const service = await prisma.service.findUnique({
     where: { id: serviceId },
+    include: {
+      customer: true,
+    },
   });
 
   if (!service) {
     return { error: "Service not found" };
   }
 
+  if (!service.customer.installationDate) {
+    return { error: "Customer installation date is not set" };
+  }
+
   // Calculate which service cycle this is based on installation date
   const monthsSinceInstallation = Math.floor(
-    (new Date().getTime() - new Date(service.installationDate).getTime()) /
+    (new Date().getTime() -
+      new Date(service.customer.installationDate).getTime()) /
       (1000 * 60 * 60 * 24 * 30),
   );
 

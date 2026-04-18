@@ -1,5 +1,12 @@
 import { prisma } from "@/lib/db";
-import { Plus, Search, Wrench, Activity, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Wrench,
+  Activity,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { ServicesGrid } from "@/components/dashboard/services/services-grid";
 import { SearchInput } from "@/components/ui/search-input";
@@ -46,9 +53,11 @@ export default async function ServicesPage({
     });
   }
 
-  let orderBy: Prisma.ServiceOrderByWithRelationInput = { installationDate: "desc" };
-  if (sort === "date_asc") orderBy = { installationDate: "asc" };
-  if (sort === "date_desc") orderBy = { installationDate: "desc" };
+  let orderBy: Prisma.ServiceOrderByWithRelationInput = {
+    id: "desc",
+  };
+  if (sort === "date_asc") orderBy = { id: "asc" };
+  if (sort === "date_desc") orderBy = { id: "desc" };
 
   const services = await prisma.service.findMany({
     where,
@@ -65,8 +74,8 @@ export default async function ServicesPage({
       label: "Sort By",
       type: "radio",
       options: [
-        { label: "Newest Installation", value: "date_desc" },
-        { label: "Oldest Installation", value: "date_asc" },
+        { label: "Newest Service", value: "date_desc" },
+        { label: "Oldest Service", value: "date_asc" },
       ],
     },
     {
@@ -89,6 +98,10 @@ export default async function ServicesPage({
 
   const activeCount = services.filter((s) => s._count.amcContracts > 0).length;
   const inactiveCount = services.length - activeCount;
+  const servicesForGrid = services.map((service) => ({
+    ...service,
+    serviceRegisterDate: service.serviceRegisterDate,
+  }));
 
   return (
     <div
@@ -115,7 +128,8 @@ export default async function ServicesPage({
         <div
           className="absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
+            backgroundImage:
+              "radial-gradient(circle, #fff 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -137,7 +151,8 @@ export default async function ServicesPage({
                 Services
               </h1>
               <p className="mt-1 text-sm text-blue-100/80">
-                {services.length} installations &mdash; manage customer service records
+                {services.length} installations &mdash; manage customer service
+                records
               </p>
             </div>
           </div>
@@ -240,18 +255,17 @@ export default async function ServicesPage({
       {/* ── Services Grid ─────────────────────────────────────────── */}
       {services.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-3xl border border-white/60 bg-white/40 backdrop-blur-xl py-32 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <div
-            className="h-24 w-24 rounded-3xl flex items-center justify-center mb-6 shadow-inner border border-white/80 bg-white/50 backdrop-blur-sm"
-          >
+          <div className="h-24 w-24 rounded-3xl flex items-center justify-center mb-6 shadow-inner border border-white/80 bg-white/50 backdrop-blur-sm">
             <Wrench className="h-10 w-10 text-indigo-400" />
           </div>
           <p className="text-slate-700 text-base font-semibold mb-2">
             No services found
           </p>
           <p className="text-slate-500 text-sm mb-8 text-center max-w-xs">
-            Try adjusting your filters or start by adding a new service installation.
+            Try adjusting your filters or start by adding a new service
+            installation.
           </p>
-          
+
           {/* Empty State Button - Genie Effect */}
           <Link
             href="/dashboard/services/new"
@@ -264,7 +278,7 @@ export default async function ServicesPage({
           </Link>
         </div>
       ) : (
-        <ServicesGrid services={services} />
+        <ServicesGrid services={servicesForGrid} />
       )}
     </div>
   );

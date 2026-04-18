@@ -9,7 +9,7 @@ interface ServiceModalProps {
   service: {
     id: string;
     serviceType: string;
-    installationDate: string | Date;
+    serviceRegisterDate: string | Date;
     customer: {
       name: string;
       phone?: string;
@@ -44,7 +44,6 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
     <AnimatePresence>
       {isOpen && service && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 perspective-[2000px]">
-          
           {/* 3. The Backdrop Animation */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -58,11 +57,23 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
           {/* 4. The Modal (Genie Effect) Animation */}
           <motion.div
             // Start State (squished and at the bottom)
-            initial={{ y: "80vh", scaleX: 0.3, scaleY: 0.1, opacity: 0, rotateX: 30 }}
+            initial={{
+              y: "80vh",
+              scaleX: 0.3,
+              scaleY: 0.1,
+              opacity: 0,
+              rotateX: 30,
+            }}
             // Active State (full size, center screen)
             animate={{ y: 0, scaleX: 1, scaleY: 1, opacity: 1, rotateX: 0 }}
             // Exit State (sucks back down exactly like macOS)
-            exit={{ y: "100vh", scaleX: 0.1, scaleY: 0.1, opacity: 0, transition: { duration: 0.4, ease: "anticipate" } }}
+            exit={{
+              y: "100vh",
+              scaleX: 0.1,
+              scaleY: 0.1,
+              opacity: 0,
+              transition: { duration: 0.4, ease: "anticipate" },
+            }}
             // The Physics (Apple Spring Settings)
             transition={{
               type: "spring",
@@ -89,7 +100,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
             </div>
 
             {/* ── Content Box ── */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4 }}
@@ -127,10 +138,12 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-                    Installed
+                    Registered On
                   </p>
                   <div className="font-extrabold text-slate-800 text-lg">
-                    {new Date(service.installationDate).toLocaleDateString("en-GB")}
+                    {new Date(service.serviceRegisterDate).toLocaleDateString(
+                      "en-GB",
+                    )}
                   </div>
                 </div>
               </div>
@@ -149,7 +162,7 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Complaints Card */}
                 <div className="relative overflow-hidden rounded-2xl bg-white/50 backdrop-blur-md p-5 border border-white/60 shadow-sm transition-all hover:bg-white/70 hover:shadow-md hover:-translate-y-0.5">
                   <AlertCircle className="absolute -bottom-4 -right-4 h-20 w-20 text-orange-100/50" />
@@ -174,7 +187,6 @@ export function ServiceModal({ service, isOpen, onClose }: ServiceModalProps) {
                 <span className="relative z-10">Close Modal</span>
               </button>
             </motion.div>
-
           </motion.div>
         </div>
       )}

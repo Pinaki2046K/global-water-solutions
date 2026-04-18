@@ -21,9 +21,13 @@ export default async function ComplaintsPage({
   const statusParam = (await searchParams)?.status || "";
 
   const startDateStartString = (await searchParams)?.startDateStart;
-  const startDateStart = startDateStartString ? new Date(startDateStartString) : undefined;
+  const startDateStart = startDateStartString
+    ? new Date(startDateStartString)
+    : undefined;
   const startDateEndString = (await searchParams)?.startDateEnd;
-  const startDateEnd = startDateEndString ? new Date(startDateEndString) : undefined;
+  const startDateEnd = startDateEndString
+    ? new Date(startDateEndString)
+    : undefined;
 
   const whereClause: Prisma.ComplaintWhereInput = {
     AND: [
@@ -94,7 +98,7 @@ export default async function ComplaintsPage({
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -152,8 +156,17 @@ export default async function ComplaintsPage({
 
       <div className="grid gap-6 md:grid-cols-2">
         {complaints.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-gray-500">
-            No active complaints.
+          <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white/50 backdrop-blur-sm py-16 px-4 text-center shadow-sm transition-all hover:bg-white">
+            <div className="mx-auto mb-4 rounded-full bg-gray-50 p-4 border border-gray-100">
+              <AlertCircle className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="mb-2 text-base font-semibold text-gray-900">
+              No complaints found
+            </h3>
+            <p className="max-w-sm text-sm text-gray-500">
+              There are currently no active complaints matching your search
+              criteria.
+            </p>
           </div>
         ) : (
           complaints.map((complaint) => (

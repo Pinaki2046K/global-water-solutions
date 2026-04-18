@@ -103,7 +103,7 @@ async function main() {
       data: {
         customerId: customer.id,
         serviceType: serviceType,
-        installationDate: installDate,
+        serviceRegisterDate: installDate,
       },
     });
 

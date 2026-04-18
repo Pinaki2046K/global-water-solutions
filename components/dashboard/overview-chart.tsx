@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Area,
   AreaChart,
@@ -13,10 +14,13 @@ import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 interface OverviewChartProps {
-  data: {
-    name: string;
-    revenue: number;
-  }[];
+  data: Record<
+    string,
+    {
+      name: string;
+      revenue: number;
+    }[]
+  >;
 }
 
 interface CustomTooltipProps {
@@ -28,7 +32,7 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 5, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         className="bg-white/90 backdrop-blur-xl border border-white/60 p-4 rounded-2xl shadow-[0_16px_40px_-10px_rgba(46,52,88,0.2)]"
@@ -53,8 +57,12 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 };
 
 export function OverviewChart({ data }: OverviewChartProps) {
+  const [period, setPeriod] = useState<"6M" | "1Y" | "ALL">("6M");
+
+  const displayData = data[period] || [];
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
@@ -73,17 +81,31 @@ export function OverviewChart({ data }: OverviewChartProps) {
             Monthly revenue collection tracking
           </p>
         </div>
-        
+
         {/* ── Custom Glassmorphic Dropdown ── */}
         <div className="relative group">
-          <select className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 appearance-none">
-            <option>Last 6 Months</option>
-            <option>Last Year</option>
-            <option>All Time</option>
+          <select
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 appearance-none"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value as "6M" | "1Y" | "ALL")}
+          >
+            <option value="6M" className="text-slate-800 bg-white">
+              Last 6 Months
+            </option>
+            <option value="1Y" className="text-slate-800 bg-white">
+              Last Year
+            </option>
+            <option value="ALL" className="text-slate-800 bg-white">
+              All Time
+            </option>
           </select>
           <div className="flex items-center gap-2 bg-white/60 backdrop-blur-md border border-slate-200/60 rounded-xl px-4 py-2.5 shadow-sm transition-all duration-300 group-hover:bg-white/90 group-hover:shadow-md group-hover:border-indigo-200">
             <span className="text-sm font-bold text-slate-600 group-hover:text-[#2e3458] transition-colors">
-              Last 6 Months
+              {period === "6M"
+                ? "Last 6 Months"
+                : period === "1Y"
+                  ? "Last Year"
+                  : "All Time"}
             </span>
             <ChevronDown className="w-4 h-4 text-slate-400 transition-transform duration-300 group-hover:text-indigo-500 group-hover:rotate-180" />
           </div>
@@ -91,10 +113,10 @@ export function OverviewChart({ data }: OverviewChartProps) {
       </div>
 
       {/* ── Chart Area ── */}
-      <div className="relative z-10 flex-1 w-full min-h-[300px]">
+      <div className="relative z-10 w-full mt-4 h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            data={data}
+            data={displayData}
             margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
           >
             <defs>
@@ -146,12 +168,12 @@ export function OverviewChart({ data }: OverviewChartProps) {
               strokeWidth={4}
               fillOpacity={1}
               fill="url(#colorRevenue)"
-              activeDot={{ 
-                r: 6, 
-                strokeWidth: 4, 
-                stroke: "#ffffff", 
+              activeDot={{
+                r: 6,
+                strokeWidth: 4,
+                stroke: "#ffffff",
                 fill: "#2e3458",
-                className: "shadow-[0_0_15px_rgba(46,52,88,0.5)]" 
+                className: "shadow-[0_0_15px_rgba(46,52,88,0.5)]",
               }}
             />
           </AreaChart>
